@@ -106,25 +106,45 @@ class Simulator:
                     continue
 
             # 2. ACTUALIZACIÓN NORMAL Y DETECCIÓN DE FALLOS
-            is_active = system.relay.state == RelayState.ON
+            # Usamos comparación robusta con .value para asegurar que comparamos strings
+            # RelayState puede ser un Enum, así que .value nos da "ON" o "OFF"
+            state_str = system.relay.state.value if hasattr(system.relay.state, "value") else str(system.relay.state)
+            
+            is_active = state_str == "ON"
+            is_off = state_str == "OFF"
             
             for sensor in system.sensors:
-                if not is_active:
-                    # Si el sistema está APAGADO (OFF), los valores decaen
+                if is_off:
+                    # Si el sistema está APAGADO (OFF), los valores decaen RÁPIDAMENTE
                     if sensor.type == SensorType.TEMPERATURE:
-                        # Decaer hacia temperatura ambiente (e.g., 20.0)
+                        # Decaer hacia temperatura ambiente (e.g., 20.0) más rápido
                         diff = sensor.value - 20.0
-                        sensor.value = max(20.0, sensor.value - (diff * 0.05)) # Decaimiento exponencial suave
+                        sensor.value = max(20.0, sensor.value - (diff * 0.2)) # Decaer un 20% de la diferencia por ciclo
                     else:
-                        # Otros sensores (RPM, Voltaje, etc.) decaen a 0
-                        sensor.value = max(0.0, sensor.value * 0.9) # Decaer un 10% por ciclo
+                        # Otros sensores (RPM, Voltaje, etc.) decaen a 0 más rápido
+                        sensor.value = max(0.0, sensor.value * 0.5) # Decaer un 50% por ciclo
                     
                     sensor.value = round(sensor.value, 2)
-                    continue # Saltar lógica de fluctuación normal
-                else:
-                    # Variación aleatoria normal
-                    change = random.uniform(-sensor.drift, sensor.drift)
-                    new_value = sensor.value + change
+                    # Eliminamos el continue para que no salte al siguiente sensor sin pasar por abajo
+                    # pero abajo hay lógica de 'is_active', así que usamos continue aquí para saltar solo esa parte
+                    continue 
+                elif not is_active: 
+                     # TRIPPED u otro estado no activo que no sea OFF explícito
+                     pass 
+
+                # Variación aleatoria normal solo si está ON
+                if is_active:
+                    # Lógica de ARRANQUE/RECUPERACIÓN
+                    # Si el valor está muy por debajo del mínimo seguro, subirlo rápidamente
+                    if sensor.value < sensor.safe_min:
+                         # Subir un 20% de la diferencia hacia el safe_min
+                         diff = sensor.safe_min - sensor.value
+                         # Asegurar un incremento mínimo para evitar atascarse en asintotas
+                         increment = max(diff * 0.2, sensor.max_val * 0.05)
+                         new_value = sensor.value + increment
+                    else:
+                        change = random.uniform(-sensor.drift, sensor.drift)
+                        new_value = sensor.value + change
 
                     # Respetar límites físicos simulados
                     new_value = max(sensor.min_val, min(new_value, sensor.max_val))
