@@ -3,7 +3,7 @@ import { useTheme } from '../../context/ThemeContext';
 import type { NavalSystem, Sensor } from '../../types';
 import { GlassCard, StatusBadge, NeonButton } from '../ui';
 import { Zap, Activity, AlertTriangle, Power } from 'lucide-react';
-import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { t } from '../../utils/translations';
 
 import { motion } from 'framer-motion';
@@ -73,10 +73,17 @@ export function SystemCard({ system, onInjectFault, onShutdownRelay }: SystemCar
 function SensorDisplay({ sensor }: { sensor: Sensor }) {
     const { theme } = useTheme();
     
-    // Generate fake history for sparkline (in a real app this would come from history prop)
+    // Use real history if available, otherwise fallback to current value
     const data = useMemo(() => {
-        return Array.from({ length: 10 }, () => ({ value: sensor.value + Math.random() * 2 - 1 }));
-    }, [sensor.value]);
+        if (sensor.history && sensor.history.length > 0) {
+            return sensor.history.map(h => ({
+                time: new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                value: h.value
+            }));
+        }
+        // Fallback for initial state
+        return [{ time: new Date().toLocaleTimeString(), value: sensor.value }];
+    }, [sensor.history, sensor.value]);
 
     const tooltipStyle = theme === 'dark' 
         ? { backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid #333', borderRadius: '4px' }
@@ -100,12 +107,13 @@ function SensorDisplay({ sensor }: { sensor: Sensor }) {
             <div className="h-10 w-full mt-2">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data}>
+                        <XAxis dataKey="time" hide />
                         <YAxis domain={['auto', 'auto']} hide />
                         <Tooltip 
                             contentStyle={tooltipStyle}
                             itemStyle={tooltipItemStyle}
-                            labelStyle={{ display: 'none' }}
-                            formatter={(value: number | undefined) => [value ? `${value.toFixed(2)} ${sensor.unit}` : 'N/A', '']}
+                            formatter={(value: number | undefined) => [value ? `${value.toFixed(2)} ${sensor.unit}` : 'N/A', 'Valor']}
+                            labelStyle={{ color: theme === 'dark' ? '#ccc' : '#666', marginBottom: '0.25rem' }}
                         />
                         <Line 
                             type="monotone" 

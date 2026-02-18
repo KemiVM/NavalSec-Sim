@@ -42,11 +42,11 @@ class Simulator:
             # 3. Bomba de Achique (Sentina)
             NavalSystem(
                 id="sys_bilge_pump", name="Bomba de Achique",
-                relay=Relay(id="rel_bilge", state=RelayState.OFF),
+                relay=Relay(id="rel_bilge", state=RelayState.ON),
                 sensors=[
-                    Sensor(id="sens_bilge_curr", type=SensorType.CURRENT, value=0.0, unit="A", 
-                           min_val=0, max_val=50, drift=0.0,
-                           safe_min=0, safe_max=25, critical_min=-1, critical_max=30)
+                    Sensor(id="sens_bilge_curr", type=SensorType.CURRENT, value=12.5, unit="A", 
+                           min_val=0, max_val=50, drift=2.5,
+                           safe_min=5, safe_max=35, critical_min=-1, critical_max=45)
                 ]
             ),
 

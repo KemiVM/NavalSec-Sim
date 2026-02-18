@@ -14,6 +14,7 @@ export interface Sensor {
     critical_max?: number;
     safe_min?: number;
     safe_max?: number;
+    history?: { timestamp: string; value: number }[];
 }
 
 export interface NavalSystem {

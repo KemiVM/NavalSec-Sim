@@ -38,7 +38,28 @@ export default function Dashboard() {
                 // Fetch for sidebar history
                 api.getLogs(50, true) 
             ]);
-            setSystems(systemsData);
+            setSystems(prevSystems => {
+                const now = new Date().toISOString();
+                
+                return systemsData.map(newSystem => {
+                    const prevSystem = prevSystems.find(s => s.id === newSystem.id);
+                    
+                    const sensorsWithHistory = newSystem.sensors.map(newSensor => {
+                        const prevSensor = prevSystem?.sensors.find(s => s.id === newSensor.id);
+                        const prevHistory = prevSensor?.history || [];
+                        
+                        // Keep last 20 points
+                        const newHistory = [
+                            ...prevHistory, 
+                            { timestamp: now, value: newSensor.value }
+                        ].slice(-20);
+                        
+                        return { ...newSensor, history: newHistory };
+                    });
+
+                    return { ...newSystem, sensors: sensorsWithHistory };
+                });
+            });
             
             // Check for state transitions to trigger alerts
             systemsData.forEach(system => {
@@ -156,12 +177,17 @@ export default function Dashboard() {
             <Toaster richColors position="top-right" theme="system" />
             <header className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
-                    <div className="relative w-32 h-32">
+                    {/* Logo / Ship Hologram */}
+                    <div className="relative w-24 h-24">
                         <div className="absolute inset-0 bg-blue-500 blur-xl opacity-20 animate-pulse rounded-full"></div>
                         <img 
-                            src="/Logotipo barco.png" 
-                            alt="Ship Sim Logo" 
-                            className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                            src="/Logotipo%20barco.png" 
+                            alt="Ship Logo" 
+                            className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,149,255,0.5)]"
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center w-full h-full text-6xl">🚢</div>';
+                            }}
                         />
                     </div>
                     <div>
