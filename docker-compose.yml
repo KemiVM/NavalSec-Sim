@@ -1,0 +1,112 @@
+services:
+  # Servicio 1: Simulación de relés y sensores
+  simulador:
+    build:
+      context: ./simulacion
+      dockerfile: Dockerfile
+    container_name: simulador
+    ports:
+      - "8001:8000"
+    environment:
+      - APP_ENV=production
+      - DATA_COLLECTOR_URL=http://datos:8000/api/logs/
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import http.client; conn = http.client.HTTPConnection('localhost', 8000); conn.request('GET', '/health'); res = conn.getresponse(); exit(0 if res.status == 200 else 1)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      datos:
+        condition: service_healthy
+    networks:
+      - barco-net
+    restart: unless-stopped
+
+  # Servicio 2: Inyección de fallos
+  fallos:
+    build:
+      context: ./fallos
+      dockerfile: Dockerfile
+    container_name: fallos
+    ports:
+      - "8002:8000"
+    environment:
+      - SIMULATOR_URL=http://simulador:8000
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import http.client; conn = http.client.HTTPConnection('localhost', 8000); conn.request('GET', '/health'); res = conn.getresponse(); exit(0 if res.status == 200 else 1)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      simulador:
+        condition: service_healthy
+    networks:
+      - barco-net
+
+  # Servicio 3: Colector de datos
+  datos:
+    build:
+      context: ./datos
+      dockerfile: Dockerfile
+    container_name: datos
+    ports:
+      - "8003:8000"
+    environment:
+      - DATABASE_URL=sqlite:////data/ship_history.db
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import http.client; conn = http.client.HTTPConnection('localhost', 8000); conn.request('GET', '/health'); res = conn.getresponse(); exit(0 if res.status == 200 else 1)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ship_data_volume:/data
+    networks:
+      - barco-net
+
+  # Servicio 4: Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: barco-frontend
+    ports:
+      - "3000:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      simulador:
+        condition: service_healthy
+      fallos:
+        condition: service_healthy
+      datos:
+        condition: service_healthy
+    networks:
+      - barco-net
+
+volumes:
+  ship_data_volume: # Volumen nombrado para persistir datos entre reinicios
+
+networks:
+  barco-net:
+    driver: bridge
