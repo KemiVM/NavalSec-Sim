@@ -2,7 +2,7 @@
 
 Sistema avanzado de monitorización y simulación naval con interfaz moderna y capacidades de inyección de fallos en tiempo real.
 
-![Dashboard Preview]<img width="1920" height="905" alt="image" src="https://github.com/user-attachments/assets/3e611539-0183-4851-a2d8-c1f41cf4adca" />
+<img width="1920" height="905" alt="image" src="https://github.com/user-attachments/assets/3e611539-0183-4851-a2d8-c1f41cf4adca" />
 
 
 ## 📋 Descripción
