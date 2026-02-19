@@ -13,13 +13,20 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-    // Default to dark mode for cyberpunk aesthetic
-    const [theme, setTheme] = useState<Theme>('dark');
+    // Default to system preference or dark mode
+    const [theme, setTheme] = useState<Theme>(() => {
+        const saved = localStorage.getItem('theme');
+        if (saved && (saved === 'dark' || saved === 'light')) {
+            return saved;
+        }
+        return 'dark'; // Default
+    });
 
     useEffect(() => {
         const root = window.document.documentElement;
         root.classList.remove('light', 'dark');
         root.classList.add(theme);
+        localStorage.setItem('theme', theme);
     }, [theme]);
 
     const toggleTheme = () => {

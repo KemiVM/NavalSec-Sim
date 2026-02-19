@@ -1,13 +1,24 @@
-import Dashboard from './views/Dashboard'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import Overview from './pages/Overview';
+import Security from './pages/Security';
+import NavalStatus from './pages/NavalStatus';
+import Settings from './pages/Settings';
 
 function App() {
   return (
-    <div className="min-h-screen bg-neon-dark bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-neon-dark to-black text-white selection:bg-neon-pink/30">
-      <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-      <div className="relative z-10 container mx-auto">
-        <Dashboard />
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Overview />} />
+          <Route path="security" element={<Security />} />
+          <Route path="naval" element={<NavalStatus />} />
+          <Route path="settings" element={<Settings />} />
+          {/* Redirect generic dashboard to overview if accessed directly via old link */}
+          <Route path="dashboard" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
