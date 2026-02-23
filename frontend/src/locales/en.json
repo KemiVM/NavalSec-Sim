@@ -1,0 +1,71 @@
+{
+  "header": {
+    "search": "Search events, systems or alerts...",
+    "notifications": "Notifications",
+    "markRead": "Mark read",
+    "clearAll": "Clear All",
+    "noNotifications": "No notifications",
+    "admin": "Administrator",
+    "operator": "Operator"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "simulation": "Simulation",
+    "faults": "Fault Injection",
+    "history": "History Logs",
+    "help": "Help Guide",
+    "settings": "Settings"
+  },
+  "settings": {
+    "saved": "UI settings saved",
+    "backendSaved": "Backend configuration updated",
+    "appearance": "Appearance & Language",
+    "theme": "Visual Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "System Language",
+    "simParams": "Cycle Parameters"
+  },
+  "dashboard": {
+    "title": "Security Overview",
+    "subtitle": "Real-time monitoring and threat detection.",
+    "totalEvents": "Total Events",
+    "criticalAlerts": "Critical Alerts",
+    "activeAgents": "Active Agents",
+    "uptime": "Uptime",
+    "alertsEvolution": "Alerts Evolution",
+    "systemState": "System State",
+    "activeModules": "Active Modules",
+    "loading": "Loading dashboard..."
+  },
+  "simulation": {
+    "title": "Simulation Center",
+    "subtitle": "Real-time monitoring and control of systems",
+    "refresh": "Refresh",
+    "turnOn": "Turn On",
+    "turnOff": "Turn Off",
+    "forceFault": "Force Fault"
+  },
+  "faults": {
+    "title": "Fault Injection",
+    "subtitle": "Advanced module for physical faults and cyber attacks simulation",
+    "systemOverload": "System Overload",
+    "spoofing": "Sensor Spoofing"
+  },
+  "data": {
+    "title": "Data Logbook",
+    "subtitle": "Persistent record of telemetry, audits and trips",
+    "all": "All Events",
+    "normal": "Routine Logs",
+    "warnings": "Preventive Warnings",
+    "critical": "Critical Trips",
+    "eventsHistory": "Event Audit"
+  },
+  "sensor": {
+    "TEMPERATURE": "Temperature",
+    "VOLTAGE": "Voltage",
+    "CURRENT": "Current",
+    "RPM": "RPM"
+  }
+}

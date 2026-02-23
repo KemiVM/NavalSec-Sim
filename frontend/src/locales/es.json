@@ -1,0 +1,123 @@
+{
+  "header": {
+    "search": "Buscar eventos, sistemas o alertas...",
+    "notifications": "Notificaciones",
+    "markRead": "Marcar leídas",
+    "clearAll": "Limpiar Todas",
+    "noNotifications": "No hay notificaciones",
+    "admin": "Administrador",
+    "operator": "Operador"
+  },
+  "sidebar": {
+    "dashboard": "Panel de Control",
+    "simulation": "Simulación",
+    "faults": "Inyección de Fallos",
+    "history": "Bitácora",
+    "help": "Guía Técnica",
+    "settings": "Parámetros"
+  },
+  "settings": {
+    "saved": "Ajustes de interfaz guardados",
+    "backendSaved": "Configuración del servidor actualizada",
+    "appearance": "Apariencia e Idioma",
+    "theme": "Tema Visual",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema",
+    "language": "Idioma del Sistema",
+    "simParams": "Parámetros del Ciclo"
+  },
+  "dashboard": {
+    "title": "Monitorización de Superficie",
+    "subtitle": "Supervisión telemétrica en tiempo real y gestión de contingencias.",
+    "totalEvents": "Transacciones de Red",
+    "criticalAlerts": "Eventos de Trip",
+    "activeAgents": "Sistemas en Servicio",
+    "uptime": "Disponibilidad",
+    "alertsEvolution": "Tendencia de Señales Críticas",
+    "systemState": "Integridad Operativa",
+    "activeModules": "Subsistemas Actores",
+    "loading": "Sincronizando telemetría...",
+    "realtime": "Sincronizado",
+    "processedEvents": "Eventos procesados",
+    "last150": "Muestra del historial reciente",
+    "connectedSystems": "Sistemas integrados",
+    "availabilityLabel": "Disponibilidad de infraestructura",
+    "last24h": "Intervalo: Últimas 24 horas",
+    "distribution": "Distribución del estado operativo",
+    "states": {
+        "active": "En Servicio",
+        "fault": "Fallo / Disparado",
+        "inactive": "Fuera de Servicio"
+    }
+  },
+  "simulation": {
+    "title": "Consola de Telemetría",
+    "subtitle": "Supervisión técnica de caudal, tensión y revoluciones en tiempo real",
+    "refresh": "Sincronizar",
+    "turnOn": "Energizar",
+    "turnOff": "Cortar Suministro",
+    "forceFault": "Simular Cortocircuito",
+    "relayStates": {
+        "ON": "EN SERVICIO",
+        "OFF": "FUERA DE SERVICIO",
+        "TRIPPED": "DISPARADO"
+    }
+  },
+  "faults": {
+    "title": "Inyección de Anomalías",
+    "subtitle": "Gestor avanzado para la intercepción activa de vectores I/O por fuerza bruta",
+    "systemOverload": "Sobrecarga Electromecánica",
+    "spoofing": "Falsificación de Sensores (Spoofing)",
+    "targetSystem": "Sistema Objetivo",
+    "selectSystem": "Seleccione un sistema de la lista...",
+    "faultDuration": "Duración de la Intervención (segundos)",
+    "faultDesc": "Provoca una anomalía eléctrica o térmica que fuerza al relé de protección a entrar en estado crítico.",
+    "durationNote": "El sistema se mantendrá en estado degradado durante este intervalo temporal.",
+    "executePhysical": "Ejecutar Intervención Física",
+    "targetSensor": "Sensor de Entrada",
+    "selectSensor": "Primero seleccione un subsistema...",
+    "spoofingDesc": "Inyección de lecturas exógenas en el canal de comunicación para eludir la lógica de control.",
+    "falseValue": "Magnitud de Inyección",
+    "durationShort": "Duración (seg)",
+    "executeCyber": "Ejecutar Vector de Suplantación",
+    "messages": {
+        "success": "Operación ejecutada con éxito",
+        "errorRelay": "Error en la inyección de fallo de protección física",
+        "errorSensor": "Error en la inyección de vector de suplantación"
+    }
+  },
+  "data": {
+    "title": "Bitácora del Sistema",
+    "subtitle": "Registro persistente de telemetría, auditorías y cortes críticos",
+    "all": "Todos los Eventos",
+    "normal": "Registros de Rutina",
+    "warnings": "Avisos Preventivos",
+    "critical": "Cortes Críticos",
+    "eventsHistory": "Auditoría de Eventos",
+    "loading": "Recuperando registros históricos...",
+    "noData": "No existen registros disponibles para los criterios seleccionados.",
+    "noSensors": "Sin telemetría capturada",
+    "datetime": "Fecha y Hora",
+    "system": "Sistema",
+    "state": "Estado Integridad",
+    "readings": "Lecturas",
+    "physicalState": "Estado Físico del Relé",
+    "alertLevel": "Nivel de Criticidad",
+    "sensorCapture": "Captura Telemétrica de Sensores",
+    "noSensorsDetail": "No se han detectado tramas de sensores para este identificador de evento."
+  },
+  "sensor": {
+    "TEMPERATURE": "Temperatura",
+    "VOLTAGE": "Voltaje",
+    "CURRENT": "Corriente",
+    "RPM": "Revoluciones (RPM)",
+    "WATER_LEVEL": "Nivel de Agua",
+    "FLOW_RATE": "Caudal de Extracción",
+    "FREQUENCY": "Frecuencia de Red",
+    "PRESSURE": "Presión Manométrica",
+    "ANGLE": "Ángulo de Deflexión",
+    "RANGE": "Rango de Detección",
+    "SMOKE": "Nivel de Humos"
+  }
+}

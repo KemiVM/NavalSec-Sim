@@ -16,6 +16,10 @@ class SystemLog(SQLModel, table=True):
     sensor_data: str # Ej: {"temp": 80, "rpm": 1200}
 
     is_abnormal: bool = Field(default=False)
+    
+    # Cyberattack detection
+    is_attack: bool = Field(default=False)
+    source_ip: Optional[str] = None
 
 # Modelos Pydantic para recibir datos en la API
 class SensorData(BaseModel):
@@ -35,3 +39,4 @@ class NavalSystemInput(BaseModel):
     name: str
     relay: Dict[str, Any] # Esperamos un objeto relay con campo 'state'
     sensors: list[SensorData]
+    under_attack_ip: Optional[str] = None

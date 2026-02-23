@@ -1,101 +1,75 @@
-# 🚢 SHIP SIM V3.0
+# 🚢 NAVALSEC - Ship Simulator V3.0
 
-Sistema avanzado de monitorización y simulación naval con interfaz moderna y capacidades de inyección de fallos en tiempo real.
+Sistema profesional de monitorización y simulación naval con arquitectura de microservicios y capacidades de ciberdefensa.
 
 <img width="1920" height="905" alt="image" src="https://github.com/user-attachments/assets/3e611539-0183-4851-a2d8-c1f41cf4adca" />
 
-
 ## 📋 Descripción
 
-SHIP SIM V3.0 es una plataforma completa diseñada para simular, monitorizar y gestionar sistemas críticos de una embarcación. Ofrece una visualización en tiempo real del estado de motores, generadores, radares y otros sistemas esenciales, permitiendo a los operadores detectar anomalías, inyectar fallos para entrenamiento y analizar datos históricos.
+**NAVALSEC** es una plataforma de alta fidelidad para la simulación y gestión de sistemas críticos en entornos marítimos. Diseñada para operadores y entrenamiento técnico, permite supervisar en tiempo real el estado de propulsión, generación eléctrica, seguridad y navegación.
 
-La interfaz de usuario ha sido construida con un diseño **Glassmorphism / Neon Cyberpunk**, ofreciendo una experiencia visual inmersiva y de alto contraste, ideal para entornos de operación nocturna o simulada.
+La interfaz ha sido refinada para ofrecer una estética de nivel industrial, eliminando informalidades y priorizando la legibilidad técnica mediante una iconografía SVG precisa y un sistema de localización bilingüe (Español/Inglés).
 
-## ✨ Características Principales
+## ✨ Características de Vanguardia
 
-- **Monitorización en Tiempo Real**: Visualización de 6 sistemas principales (Motor, Generador, Achique, Radar, Gobierno, Incendios).
-- **Sistema de Alertas Inteligente**: Notificaciones instantáneas (Toast) para eventos de disparo (Tripped), advertencias y recuperación.
-- **Control Manual y Automático**: Capacidad para encender/apagar sistemas manualmente o inyectar fallos de relé y sensores.
-- **Simulación Física**: Los valores de los sensores reaccionan al estado del sistema (decadencia exponencial al apagar, fluctuaciones realistas al encender).
-- **Historial de Datos**: Almacenamiento y visualización de logs de eventos anómalos.
-- **Arquitectura de Microservicios**: Backend modular basado en Python (FastAPI) y containerizado con Docker.
+- **Monitorización Multisistema**: Control centralizado sobre el Motor Principal, Generador Auxiliar, Bombas de Achique, Radar Banda-X, Sistema de Gobierno y Contraincendios.
+- **Configuración Avanzada**: Panel de "Parámetros" para el ajuste dinámico de intervalos de refresco de UI y frecuencia de registro en el servidor.
+- **Seguridad y Ciberdefensa**:
+  - Gestión de **Lista Blanca de IPs** en tiempo real.
+  - Detección inteligente de ataques: las anomalías de red son filtradas para distinguir entre intervenciones autorizadas y posibles ciberataques.
+- **Personalización de Interfaz**: Sistema de persistencia local para ocultar sistemas o reordenar tarjetas del Dashboard y Simulación según la prioridad operativa.
+- **Guía Técnica Integrada**: Manual profesional "in-game" con procedimientos de recuperación y resolución de problemas (Troubleshooting).
+- **Simulación Física Realista**: Comportamiento dinámico de sensores con inercia térmica y respuesta física coherente al estado de los relés.
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Stack Tecnológico
 
 ### Frontend
 
-- **React 19** + **Vite**: Rendimiento y desarrollo moderno.
-- **TypeScript**: Tipado estático para mayor robustez.
-- **Tailwind CSS**: Estilizado utility-first.
-- **Sonner**: Sistema de notificaciones toast.
-- **Recharts**: Gráficos de datos en tiempo real.
-- **Lucide React**: Iconografía moderna.
+- **React 19** + **Vite** (TypeScript)
+- **Tailwind CSS** + **Framer Motion** (Animaciones técnicas)
+- **Settings API**: Persistencia local de preferencias de usuario.
+- **Lucide Icons**: Iconografía técnica profesional.
 
-### Backend
+### Backend (Microservicios)
 
-- **Python 3.11**: Lenguaje base.
-- **FastAPI**: Framework web de alto rendimiento.
-- **UV**: Gestor de paquetes y entornos virtuales ultra-rápido.
-- **SQLite**: Persistencia de datos ligera.
-- **Docker**: Containerización completa.
+- **Python 3.11** + **FastAPI**
+- **Docker & Docker Compose**: Orquestación completa.
+- **SQLite**: Persistencia de logs e histórico de anomalías.
 
-## 🚀 Requisitos Previos
+## 🚀 Instalación Rápida
 
-- [Docker](https://www.docker.com/get-started) instalado y ejecutándose.
-- [Git](https://git-scm.com/) para clonar el repositorio.
-
-## 📦 Instalación y Ejecución
-
-1.  **Clonar el repositorio:**
+1.  **Clonación**:
 
     ```bash
-    git clone https://github.com/tu-usuario/barco-simulator-3.0.git
-    cd barco-simulator-3.0
+    git clone https://github.com/tu-usuario/navalsec-sim.git
+    cd navalsec-sim
     ```
 
-2.  **Iniciar los servicios con Docker Compose:**
+2.  **Despliegue**:
 
     ```bash
     docker compose up --build
     ```
 
-    _Este comando descargará las imágenes necesarias, construirá el frontend y los microservicios backend, e iniciará el entorno completo._
+3.  **Acceso**:
+    - **Interfaz de Usuario**: [http://localhost:3000](http://localhost:3000)
+    - **Documentación API**: [http://localhost:8001/docs](http://localhost:8001/docs)
 
-3.  **Acceder a la aplicación:**
-    - Abra su navegador y vaya a: **[http://localhost:3000](http://localhost:3000)**
-
-## 📂 Estructura del Proyecto
+## 📂 Arquitectura
 
 ```
-barco-simulator-3.0/
-├── frontend/           # Aplicación React (Interfaz de Usuario)
-├── simulacion/         # Microservicio: Lógica física y simulación
-├── datos/              # Microservicio: Persistencia y gestión de logs
-├── fallos/             # Microservicio: Orquestador de inyección de fallos
-├── docker-compose.yml  # Orquestación de contenedores
-└── .gitignore          # Configuración de exclusiones de Git
+navalsec-sim/
+├── frontend/           # Interfaz React (Dashboard & Control)
+├── simulacion/         # Núcleo de física y lógica de sistemas
+├── datos/              # Gestión de persistencia e histórico
+├── fallos/             # Motor de inyección de anomalías
+└── docker-compose.yml  # Configuración de red y contenedores
 ```
-
-## 🔗 Puntos de Acceso (Endpoints)
-
-| Servicio          | URL Local                    | Descripción                       |
-| :---------------- | :--------------------------- | :-------------------------------- |
-| **Frontend**      | `http://localhost:3000`      | Interfaz Principal (Dashboard)    |
-| **Simulador API** | `http://localhost:8001/docs` | Swagger UI del Simulador          |
-| **Fallos API**    | `http://localhost:8002/docs` | Swagger UI del Inyector de Fallos |
-| **Datos API**     | `http://localhost:8003/docs` | Swagger UI del Colector de Datos  |
-
-## 🕹️ Guía de Uso Rápida
-
-1.  **Dashboard**: Observe los valores de los sensores fluctuando en las tarjetas de sistema.
-2.  **Inyectar Fallo**: Pulse el botón de _Alerta_ (Triángulo) en una tarjeta para simular un fallo de relé. Verá una alerta roja y el sistema se detendrá.
-3.  **Control Manual**: Pulse el botón de _Energía_ para apagar o encender un sistema manualmente. Los valores decaerán suavemente al apagarlo.
-4.  **Historial**: Consulte la barra lateral derecha para ver el registro de eventos críticos pasados.
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT.
+Este proyecto se distribuye bajo la **Licencia MIT**. Consulte el archivo `LICENSE` para más detalles.
 
 ---
 
-Desarrollado con ❤️ para simulación naval avanzada.
+Desarrollado con rigor técnico para la próxima generación de simulación naval.

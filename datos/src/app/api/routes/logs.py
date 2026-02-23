@@ -8,7 +8,7 @@ from app.models import SystemLog, NavalSystemInput
 router = APIRouter()
 
 @router.post("/", status_code=201)
-async def receive_log(data: NavalSystemInput):
+def receive_log(data: NavalSystemInput):
     # Recibe un estado de sistema, valida y guarda en la base de datos
     try:
         # Validación robusta de estado
@@ -39,7 +39,9 @@ async def receive_log(data: NavalSystemInput):
             system_name=data.name,
             relay_state=relay_val,
             sensor_data=sensors_json,
-            is_abnormal=is_abnormal
+            is_abnormal=is_abnormal,
+            is_attack=bool(data.under_attack_ip),
+            source_ip=data.under_attack_ip
         )
 
         with Session(engine) as session:
@@ -55,7 +57,7 @@ async def receive_log(data: NavalSystemInput):
         raise HTTPException(status_code=500, detail=f"Error saving log: {str(e)}")
 
 @router.get("/", response_model=List[SystemLog])
-async def get_logs(limit: int = 50, abnormal_only: bool = False, search: str = Query(None, description="Search term")):
+def get_logs(limit: int = 50, abnormal_only: bool = False, search: str = Query(None, description="Search term")):
     # API para que la interfaz web consulte los datos
     with Session(engine) as session:
         query = select(SystemLog).order_by(SystemLog.timestamp.desc())

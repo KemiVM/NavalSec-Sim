@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 # Enums para estados fijos
@@ -43,6 +43,7 @@ class NavalSystem(BaseModel):
     name: str
     relay: Relay
     sensors: List[Sensor] = []
+    under_attack_ip: Optional[str] = None
 
 # Modelo para respuesta de la API
 class SystemResponse(BaseModel):
