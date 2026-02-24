@@ -6,7 +6,28 @@
     "clearAll": "Clear All",
     "noNotifications": "No notifications",
     "admin": "Administrator",
-    "operator": "Operator"
+    "operator": "Operator",
+    "profile": "Profile"
+  },
+  "login": {
+    "subtitle": "Advanced Naval Simulation & Control",
+    "fullName": "Full Name",
+    "username": "Username",
+    "email": "Email Address",
+    "password": "Password",
+    "login": "Sign In",
+    "signup": "Create Account",
+    "noAccount": "Don't have an account? Sign up here",
+    "hasAccount": "Already have an account? Sign in"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and security preferences.",
+    "personalInfo": "Personal Information",
+    "security": "Account Security",
+    "logout": "Log Out",
+    "saveChanges": "Save Changes",
+    "updateSecurity": "Update Security"
   },
   "sidebar": {
     "dashboard": "Dashboard",

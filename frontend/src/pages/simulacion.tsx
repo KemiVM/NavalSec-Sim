@@ -137,10 +137,10 @@ export function Simulacion() {
                             variant={system.relay.state === "ON" ? "ghost" : "default"}
                             onClick={() => handleSetRelay(system.id, system.relay.state === "ON" ? "OFF" : "ON")}
                             className="flex-1 md:flex-none"
-                            disabled={system.relay.state === "TRIPPED"}
                             size="sm"
                         >
-                            {system.relay.state === "ON" ? t("simulation.turnOff") : t("simulation.turnOn")}
+                            {system.relay.state === "ON" ? t("simulation.turnOff") : 
+                             system.relay.state === "TRIPPED" ? t("simulation.recover") || "RECUPERAR" : t("simulation.turnOn")}
                         </Button>
                         <Button
                             variant={system.relay.state === "TRIPPED" ? "ghost" : "destructive"}

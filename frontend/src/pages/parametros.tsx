@@ -15,6 +15,7 @@ import {
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useTheme } from "@/contexts/ThemeContext"
 import { useSettings } from "@/contexts/SettingsContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { 
   Settings, 
   Monitor, 
@@ -28,8 +29,11 @@ import {
   Database,
   ArrowUp,
   ArrowDown,
-  Eye} from "lucide-react"
+  Eye,
+  Users,
+  Trash2} from "lucide-react"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
 const SYSTEM_NAMES: Record<string, string> = {
   "sys_main_engine": "Motor Principal",
@@ -55,6 +59,7 @@ export function Parametros() {
     simulationLayout,
     moveSystem
   } = useSettings()
+  const { users, promoteUser, deleteUser, user: currentUser } = useAuth()
 
   const [localInterval, setLocalInterval] = useState(refreshInterval.toString())
   const [localLogInterval, setLocalLogInterval] = useState(backendConfig.log_interval.toString())
@@ -91,12 +96,20 @@ export function Parametros() {
 
   const handleRemoveIp = async (ip: string) => {
     try {
+      if (!window.confirm(`¿Está seguro de que desea eliminar la IP ${ip} de la lista blanca?`)) return
       await updateBackendConfig({
         valid_ips: backendConfig.valid_ips.filter(i => i !== ip)
       })
       toast.success("IP eliminada")
     } catch (e) {
       toast.error("Error al eliminar IP")
+    }
+  }
+
+  const handleDeleteUser = (userId: string, userName: string) => {
+    if (window.confirm(`¿ESTÁ SEGURO? Esta acción eliminará permanentemente al usuario "${userName}". Esta acción no se puede deshacer.`)) {
+      deleteUser(userId)
+      toast.success(`Usuario ${userName} eliminado del sistema`)
     }
   }
 
@@ -271,7 +284,7 @@ export function Parametros() {
           </Card>
         </motion.div>
 
-        {/* --- SECCIÓN: DASHBOARD --- */}
+        {/* --- SECCIÓN: PERSONALIZACIÓN DE VISTAS --- */}
         <motion.div variants={item} className="md:col-span-2">
           <Card className="border-primary/5 shadow-md">
             <CardHeader className="bg-muted/10 border-b">
@@ -369,6 +382,82 @@ export function Parametros() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* --- SECCIÓN: GESTIÓN DE USUARIOS --- */}
+        <motion.div variants={item} className="md:col-span-2">
+          <Card className="border-primary/5 shadow-md">
+            <CardHeader className="bg-muted/10 border-b">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                <CardTitle>Gestión de Personal y Permisos</CardTitle>
+              </div>
+              <CardDescription>Otorga privilegios de administrador o revócalos para el resto de usuarios.</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="overflow-x-auto rounded-lg border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-semibold">Usuario</th>
+                      <th className="px-4 py-3 text-left font-semibold">Email</th>
+                      <th className="px-4 py-3 text-left font-semibold">Rol Actual</th>
+                      <th className="px-4 py-3 text-right font-semibold">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {users.map((u) => (
+                      <tr key={u.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-4 py-3 flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-full overflow-hidden border">
+                            <img src={u.avatar} alt={u.username} className="h-full w-full object-cover" />
+                          </div>
+                          <span className="font-medium">{u.name} <span className="text-muted-foreground text-[10px]">(@{u.username})</span></span>
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
+                        <td className="px-4 py-3">
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border",
+                            u.role === 'admin' ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-transparent"
+                          )}>
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          {u.id !== currentUser?.id ? (
+                            <div className="flex items-center justify-end gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className={cn(
+                                  "h-8 text-[11px] font-bold",
+                                  u.role === 'admin' ? "text-destructive hover:bg-destructive/10" : "text-primary px-3"
+                                )}
+                                onClick={() => promoteUser(u.id, u.role === 'admin' ? 'user' : 'admin')}
+                              >
+                                {u.role === 'admin' ? 'Revocar Admin' : 'Hacer Admin'}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                onClick={() => handleDeleteUser(u.id, u.name)}
+                                title="Eliminar Usuario"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] italic text-muted-foreground px-3">Tú (Actual)</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>

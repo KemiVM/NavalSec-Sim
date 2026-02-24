@@ -6,7 +6,28 @@
     "clearAll": "Limpiar Todas",
     "noNotifications": "No hay notificaciones",
     "admin": "Administrador",
-    "operator": "Operador"
+    "operator": "Operador",
+    "profile": "Perfil"
+  },
+  "login": {
+    "subtitle": "Simulación y Control Naval Avanzado",
+    "fullName": "Nombre Completo",
+    "username": "Nombre de Usuario",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "login": "Iniciar Sesión",
+    "signup": "Crear Cuenta",
+    "noAccount": "¿No tiene cuenta? Regístrese aquí",
+    "hasAccount": "¿Ya tiene cuenta? Inicie sesión"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "subtitle": "Gestione su información personal y preferencias de seguridad.",
+    "personalInfo": "Información Personal",
+    "security": "Seguridad de la Cuenta",
+    "logout": "Cerrar Sesión",
+    "saveChanges": "Guardar Cambios",
+    "updateSecurity": "Actualizar Seguridad"
   },
   "sidebar": {
     "dashboard": "Panel de Control",
@@ -57,6 +78,7 @@
     "refresh": "Sincronizar",
     "turnOn": "Energizar",
     "turnOff": "Cortar Suministro",
+    "recover": "RECUPERAR",
     "forceFault": "Simular Cortocircuito",
     "relayStates": {
         "ON": "EN SERVICIO",
@@ -67,6 +89,14 @@
   "faults": {
     "title": "Inyección de Anomalías",
     "subtitle": "Gestor avanzado para la intercepción activa de vectores I/O por fuerza bruta",
+    "labsHeader": "NAVALSEC Labs",
+    "labsDesc": "Plataforma avanzada de inyección de vulnerabilidades y simulación de escenarios críticos para pruebas de resiliencia.",
+    "sensorModule": "Laboratorio de Sensores",
+    "cyberModule": "Centro de Operaciones de Ciberseguridad",
+    "physicalType": "Físico",
+    "networkType": "Red",
+    "sourceIP": "IP de Origen (Simulada)",
+    "executionQueue": "Cola de Ejecución en Tiempo Real",
     "systemOverload": "Sobrecarga Electromecánica",
     "spoofing": "Falsificación de Sensores (Spoofing)",
     "targetSystem": "Sistema Objetivo",

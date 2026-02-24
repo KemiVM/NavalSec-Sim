@@ -39,16 +39,21 @@ export const SimulationService = {
 };
 
 export const FaultsService = {
-  injectRelayFault: async (systemId: string, duration: number) => {
-    const response = await api.post('/api/attacks/relay', { system_id: systemId, duration });
+  injectRelayFault: async (systemId: string, duration: number, simulatedIp?: string) => {
+    const response = await api.post('/api/attacks/relay', { 
+      system_id: systemId, 
+      duration,
+      simulated_ip: simulatedIp 
+    });
     return response.data;
   },
-  injectSensorAttack: async (systemId: string, sensorId: string, value: number, duration: number) => {
+  injectSensorAttack: async (systemId: string, sensorId: string, value: number, duration: number, simulatedIp?: string) => {
     const response = await api.post('/api/attacks/sensor', { 
         system_id: systemId, 
         sensor_id: sensorId, 
         value, 
-        duration 
+        duration,
+        simulated_ip: simulatedIp
     });
     return response.data;
   }

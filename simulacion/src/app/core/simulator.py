@@ -171,7 +171,12 @@ class Simulator:
                                 
                                 # Small drift pushing it slowly out of bounds for the "tension" requested by user
                                 tension = math.sin(current_time * 0.01 + hash(sensor.id)) * amplitude * 1.5
-                                new_value = median + wave + noise + tension
+                                target = median + wave + noise + tension
+                                
+                                # Smoothly transition towards the dynamic target to allow spoofed values to persist
+                                diff = target - sensor.value
+                                change = diff * 0.2 + random.uniform(-sensor.drift * 0.1, sensor.drift * 0.1)
+                                new_value = sensor.value + change
                         else:
                             # Fallback if safe bounds are missing
                             change = random.uniform(-sensor.drift, sensor.drift)

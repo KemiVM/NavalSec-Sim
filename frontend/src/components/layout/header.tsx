@@ -1,16 +1,19 @@
 import { useState, useRef, useEffect } from "react"
-import { Bell, Search, Menu, CheckCircle, Info, AlertTriangle, AlertCircle, X, Sun, Moon } from "lucide-react"
+import { Bell, Search, Menu, CheckCircle, Info, AlertTriangle, AlertCircle, X, Sun, Moon, User as UserIcon } from "lucide-react"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useNotifications, type AppNotification } from "@/contexts/NotificationContext"
 import { cn } from "@/lib/utils"
 import { useTheme } from "@/contexts/ThemeContext"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function Header() {
   const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification, clearNotifications } = useNotifications()
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
+  const { user } = useAuth()
   const [showNotifications, setShowNotifications] = useState(false)
   const notifRef = useRef<HTMLDivElement>(null)
 
@@ -178,15 +181,21 @@ export function Header() {
             )}
         </div>
 
-        <Button variant="ghost" size="sm" className="gap-2 ml-2 hover:bg-primary/10">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-600 flex items-center justify-center text-primary-foreground font-bold shadow-md">
-                A
-            </div>
-            <div className="hidden md:flex flex-col items-start">
-                <span className="text-sm font-medium leading-none">{t("header.admin")}</span>
-                <span className="text-xs text-muted-foreground">{t("header.operator")}</span>
-            </div>
-        </Button>
+        <Link to="/perfil">
+          <Button variant="ghost" size="sm" className="gap-2 ml-2 hover:bg-primary/10">
+              <div className="h-8 w-8 rounded-full overflow-hidden border border-primary/20 bg-muted flex items-center justify-center text-primary-foreground font-bold shadow-md">
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <UserIcon className="h-4 w-4 text-primary" />
+                  )}
+              </div>
+              <div className="hidden md:flex flex-col items-start">
+                  <span className="text-sm font-medium leading-none">{user?.name}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">{user?.role}</span>
+              </div>
+          </Button>
+        </Link>
       </div>
     </header>
   )

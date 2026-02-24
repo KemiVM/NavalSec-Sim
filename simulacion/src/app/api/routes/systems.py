@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
+import time
 from typing import List
 from app.core.simulator import simulator_instance
 from app.models import NavalSystem, RelayState, Sensor
@@ -61,7 +62,10 @@ async def set_relay_state(system_id: str, state: RelayState, request: Request):
         raise HTTPException(status_code=400, detail="Cannot trip a system that is currently OFF")
 
     system.relay.state = state
-    return {"message": f"Relay {system.relay.id} set to {state}"}
+    if state == RelayState.TRIPPED:
+        system.relay.tripped_at = time.time()
+
+    return {"message": f"Relay {system.relay.id} set to {state.value if hasattr(state, 'value') else state}"}
 
 @router.put("/{system_id}/sensors/{sensor_id}")
 async def set_sensor_value(system_id: str, sensor_id: str, value: float, request: Request):

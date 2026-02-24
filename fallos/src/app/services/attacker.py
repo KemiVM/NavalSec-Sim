@@ -37,15 +37,22 @@ class AttackService:
                 logger.error(f"Fallo al restaurar relé: {e}")
     
     async def trigger_sensor_spoof(self, system_id: str, sensor_id: str, value: float, duration: int, client_ip: str = "unknown"):
-        # Fuerza un valor en un sensor
+        # Fuerza un valor en un sensor constantemente durante la duración
+        logger.info(f"Hackeando sensor {sensor_id} a valor {value} durante {duration}s")
+        
+        start_time = asyncio.get_event_loop().time()
+        
         async with httpx.AsyncClient() as client:
             url = f"{self.base_url}/api/systems/{system_id}/sensors/{sensor_id}"
-            logger.info(f"Hackeando sensor {sensor_id} a valor {value}")
-
-            try:
-                await client.put(url, params={"value": value}, headers={"X-Forwarded-For": client_ip})
-            except Exception as e:
-                logger.error(f"Fallo al atacar sensor: {e}")
+            
+            while (asyncio.get_event_loop().time() - start_time) < duration:
+                try:
+                    await client.put(url, params={"value": value}, headers={"X-Forwarded-For": client_ip})
+                except Exception as e:
+                    logger.error(f"Fallo al atacar sensor: {e}")
+                
+                # Spamear el valor cada 0.5 segundos para abrumar la inercia física del simulador
+                await asyncio.sleep(0.5)
 
 # Instancia global
 attacker = AttackService()

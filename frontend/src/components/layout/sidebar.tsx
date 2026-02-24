@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom"
 import { LayoutDashboard, Radio, Zap, Database, Settings, LifeBuoy } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useAuth } from "@/contexts/AuthContext"
+import { Lock } from "lucide-react"
 
 const navigationKeys = [
   { key: "dashboard", href: "/", icon: LayoutDashboard },
@@ -13,6 +15,7 @@ const navigationKeys = [
 export function Sidebar() {
   const location = useLocation()
   const { t } = useLanguage()
+  const { user } = useAuth()
 
   return (
     <div className="hidden border-r bg-card/80 backdrop-blur-xl md:flex md:w-64 md:flex-col shadow-lg z-20">
@@ -53,12 +56,18 @@ export function Sidebar() {
         </nav>
       </div>
       <div className="p-4 border-t bg-muted/20">
-        <Link to="/parametros" className={cn(
-            "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer",
-            location.pathname === "/parametros" ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
-        )}>
-            <Settings className="h-4 w-4" /> {t("sidebar.settings")}
-        </Link>
+        {user?.role === "admin" ? (
+          <Link to="/parametros" className={cn(
+              "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer",
+              location.pathname === "/parametros" ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+          )}>
+              <Settings className="h-4 w-4" /> {t("sidebar.settings")}
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground/50 cursor-not-allowed">
+              <Lock className="h-4 w-4" /> {t("sidebar.settings")}
+          </div>
+        )}
         <Link to="/ayuda" className={cn(
             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer w-full text-left mt-1",
             location.pathname === "/ayuda" ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
