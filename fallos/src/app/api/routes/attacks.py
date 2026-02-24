@@ -4,11 +4,17 @@ from app.services.attacker import attacker
 
 router = APIRouter()
 
+def get_real_ip(request: Request) -> str:
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
 @router.post("/relay")
 async def inject_relay_fault(request_body: RelayFaultRequest, request: Request, background_tasks: BackgroundTasks):
     # Inicia un escenario de fallo en un relé
     # Lanzamos el ataque en segundo plano
-    client_ip = request_body.simulated_ip or (request.client.host if request.client else "unknown")
+    client_ip = request_body.simulated_ip or get_real_ip(request)
     background_tasks.add_task(
         attacker.trigger_relay_trip,
         request_body.system_id,
@@ -20,7 +26,7 @@ async def inject_relay_fault(request_body: RelayFaultRequest, request: Request, 
 @router.post("/sensor")
 async def inject_sensor_attack(request_body: SensorAttackRequest, request: Request, background_tasks: BackgroundTasks):
     # Fuerza un valor específico en un sensor
-    client_ip = request_body.simulated_ip or (request.client.host if request.client else "unknown")
+    client_ip = request_body.simulated_ip or get_real_ip(request)
     background_tasks.add_task(
         attacker.trigger_sensor_spoof,
         request_body.system_id,

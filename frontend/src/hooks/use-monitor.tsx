@@ -9,6 +9,7 @@ export function useSystemMonitor() {
   const systemsRef = useRef<Map<string, NavalSystem>>(new Map())
   const hasLoaded = useRef(false)
   const lastAttackId = useRef<number>(0)
+  const lastAttackAlertTime = useRef<number>(0)
   const { addNotification } = useNotifications()
   const { t } = useLanguage()
   const navigate = useNavigate()
@@ -25,15 +26,19 @@ export function useSystemMonitor() {
         if (hasLoaded.current) {
             recentLogs.forEach(log => {
                 if (log.is_attack && log.id > lastAttackId.current) {
-                    addNotification({
-                        title: `¡CIBERATAQUE DETECTADO!`,
-                        description: `Intrusión en el sistema ${log.system_name}. Acción bloqueada o registrada desde la IP: ${log.source_ip || 'Desconocida'}.`,
-                        type: 'error',
-                        action: {
-                            label: 'Ver Historial',
-                            onClick: () => navigate('/historial')
-                        }
-                    })
+                    const now = Date.now()
+                    if (now - lastAttackAlertTime.current > 15000) {
+                        addNotification({
+                            title: `¡CIBERATAQUE DETECTADO!`,
+                            description: `Intrusión en el sistema ${log.system_name}. Acción bloqueada o registrada desde la IP: ${log.source_ip || 'Desconocida'}.`,
+                            type: 'error',
+                            action: {
+                                label: 'Ver Historial',
+                                onClick: () => navigate('/historial')
+                            }
+                        })
+                        lastAttackAlertTime.current = now
+                    }
                     if (log.id > lastAttackId.current) {
                         lastAttackId.current = log.id;
                     }

@@ -8,33 +8,37 @@ Sistema profesional de monitorización y simulación naval con arquitectura de m
 
 **NAVALSEC** es una plataforma de alta fidelidad para la simulación y gestión de sistemas críticos en entornos marítimos. Diseñada para operadores y entrenamiento técnico, permite supervisar en tiempo real el estado de propulsión, generación eléctrica, seguridad y navegación.
 
-La interfaz ha sido refinada para ofrecer una estética de nivel industrial, eliminando informalidades y priorizando la legibilidad técnica mediante una iconografía SVG precisa y un sistema de localización bilingüe (Español/Inglés).
+La interfaz V3 incorpora una **estética Neon Cyberpunk de nivel industrial**, eliminando informalidades y priorizando la legibilidad técnica mediante una iconografía SVG precisa y un sistema de localización bilingüe (Español/Inglés).
 
 ## ✨ Características de Vanguardia
 
 - **Monitorización Multisistema**: Control centralizado sobre el Motor Principal, Generador Auxiliar, Bombas de Achique, Radar Banda-X, Sistema de Gobierno y Contraincendios.
-- **Configuración Avanzada**: Panel de "Parámetros" para el ajuste dinámico de intervalos de refresco de UI y frecuencia de registro en el servidor.
-- **Seguridad y Ciberdefensa**:
-  - Gestión de **Lista Blanca de IPs** en tiempo real.
-  - Detección inteligente de ataques: las anomalías de red son filtradas para distinguir entre intervenciones autorizadas y posibles ciberataques.
-- **Personalización de Interfaz**: Sistema de persistencia local para ocultar sistemas o reordenar tarjetas del Dashboard y Simulación según la prioridad operativa.
+- **Seguridad y Roles de Usuario**:
+  - Sistema de Autenticación de persistencia centralizada (FastAPI backend).
+  - Gestión Multi-Rol con privilegios escalonados (`admin` y `user`).
+  - Panel para promover y degradar administradores dinámicamente.
+- **Dashboard Analítico**: Módulo en tiempo real con estadísticas de Uptime, Agentes Activos, e **Histórico de Amenazas Cibernéticas** interceptadas por el servidor.
+- **Plataforma de Ciberdefensa (Mobile-Ready)**:
+  - Motor de simulación para inyección de **Ataques DDOS RELAY** y **SPOOF SENSOR** desde terminales remotos.
+  - Ofuscación de IPs y captura realista de Cabeceras HTTP `X-Forwarded-For` a través del proxy interno para activar las contramedidas y encender el Dashboard en Alerta Roja de manera fidedigna.
+  - Micro-interfaz aislada e independiente en `/hacker.html` diseñada exclusivamente para visualización vertical y evasión total de bloqueos de autenticación de React.
+- **Simulación Física Realista**: Comportamiento dinámico de sensores con inercia térmica, picos matemáticos controlados y respuesta física coherente al estado de los relés.
 - **Guía Técnica Integrada**: Manual profesional "in-game" con procedimientos de recuperación y resolución de problemas (Troubleshooting).
-- **Simulación Física Realista**: Comportamiento dinámico de sensores con inercia térmica y respuesta física coherente al estado de los relés.
 
 ## 🛠️ Stack Tecnológico
 
 ### Frontend
 
 - **React 19** + **Vite** (TypeScript)
-- **Tailwind CSS** + **Framer Motion** (Animaciones técnicas)
-- **Settings API**: Persistencia local de preferencias de usuario.
-- **Lucide Icons**: Iconografía técnica profesional.
+- **Tailwind CSS** + **Framer Motion** (Animaciones técnicas y transiciones suaves)
+- **Recharts**: Evolución de estados a largo plazo y gráficas en vivo.
+- **Nginx Reverse Proxy**: Enrutamiento avanzado de APIs estáticas, evasión de caché heurística y proxy pass.
 
 ### Backend (Microservicios)
 
 - **Python 3.11** + **FastAPI**
-- **Docker & Docker Compose**: Orquestación completa.
-- **SQLite**: Persistencia de logs e histórico de anomalías.
+- **Docker & Docker Compose**: Orquestación dinámica y despliegue inmutable.
+- **SQLite**: Persistencia de logs de sistemas, histórico de anomalías y DB centralizada de cuentas de usuario cifradas.
 
 ## 🚀 Instalación Rápida
 
@@ -45,25 +49,26 @@ La interfaz ha sido refinada para ofrecer una estética de nivel industrial, eli
     cd navalsec-sim
     ```
 
-2.  **Despliegue**:
+2.  **Despliegue de los Microservicios**:
 
     ```bash
-    docker compose up --build
+    docker compose up --build -d
     ```
 
-3.  **Acceso**:
-    - **Interfaz de Usuario**: [http://localhost:3000](http://localhost:3000)
-    - **Documentación API**: [http://localhost:8001/docs](http://localhost:8001/docs)
+3.  **Acceso (Desde tu PC y tu Móvil vía Wi-Fi local)**:
+    - **Interfaz de Comando (PC)**: [http://localhost:8080](http://localhost:8080)
+    - **Exploit Terminal Independiente (Móvil)**: `http://TU-IP-WIFI:8080/hacker.html`
+    - **Documentación API Backend**: [http://localhost:8001/docs](http://localhost:8001/docs)
 
 ## 📂 Arquitectura
 
 ```
 navalsec-sim/
-├── frontend/           # Interfaz React (Dashboard & Control)
-├── simulacion/         # Núcleo de física y lógica de sistemas
-├── datos/              # Gestión de persistencia e histórico
-├── fallos/             # Motor de inyección de anomalías
-└── docker-compose.yml  # Configuración de red y contenedores
+├── frontend/           # Interfaz React y Exploits Nativos en HTML Puro (/public)
+├── simulacion/         # Núcleo de inercia térmica, físicas y DB de Usuarios
+├── datos/              # Gestión de persistencia e histórico gráfico
+├── fallos/             # Motor asíncrono de inyección de ataques
+└── docker-compose.yml  # Configuración de red y contenedores Nginx
 ```
 
 ## 📄 Licencia
@@ -72,4 +77,4 @@ Este proyecto se distribuye bajo la **Licencia MIT**. Consulte el archivo `LICEN
 
 ---
 
-Desarrollado con rigor técnico para la próxima generación de simulación naval.
+_Desarrollado con rigor técnico para la simulación naval de nueva generación._

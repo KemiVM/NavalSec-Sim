@@ -18,7 +18,7 @@ interface AuthState {
   login: (username: string, password: string) => Promise<void>
   logout: () => void
   signup: (userData: Omit<User, "id" | "role"> & { password: string, role?: UserRole }) => Promise<void>
-  updateUser: (updates: Partial<User>) => void
+  updateUser: (updates: Partial<User> & { password?: string }) => void
   users: User[]
   promoteUser: (userId: string, role: UserRole) => void
   deleteUser: (userId: string) => void
@@ -27,43 +27,24 @@ interface AuthState {
 const AuthContext = createContext<AuthState | undefined>(undefined)
 
 const SESSION_KEY = "auth-session-v3"
-const USERS_KEY = "auth-users-v3"
-
-// Initial Mock Users
-const INITIAL_MOCK_USERS: (User & { password: string })[] = [
-  {
-    id: "1",
-    username: "admin",
-    password: "password123",
-    name: "Administrador de Sistemas",
-    email: "admin@navalsec.com",
-    role: "admin",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin"
-  },
-  {
-    id: "2",
-    username: "operator1",
-    password: "password123",
-    name: "Operador de Cubierta",
-    email: "operator1@navalsec.com",
-    role: "user",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=operator1"
-  },
-  {
-    id: "3",
-    username: "operator2",
-    password: "password123",
-    name: "Técnico de Máquinas",
-    email: "operator2@navalsec.com",
-    role: "user",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=operator2"
-  }
-]
+const AUTH_API = "/api/auth/users"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [users, setUsers] = useState<(User & { password: string })[]>(INITIAL_MOCK_USERS)
+  const [users, setUsers] = useState<(User & { password?: string })[]>([])
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(AUTH_API)
+      if (res.ok) {
+        const data = await res.json()
+        setUsers(data)
+      }
+    } catch (e) {
+      console.error("Failed to fetch users from backend", e)
+    }
+  }
 
   useEffect(() => {
     // Load persisted session from sessionStorage (cleared on browser exit)
@@ -76,35 +57,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Load all users from storage (or use defaults)
-    const savedUsers = localStorage.getItem(USERS_KEY)
-    if (savedUsers) {
-      try {
-        const parsedUsers = JSON.parse(savedUsers)
-        // Migration safety: Ensure INITIAL_MOCK_USERS are present if it seems like an old storage format
-        // or if mock users are missing after my previous change.
-        if (Array.isArray(parsedUsers) && !parsedUsers.some(u => u.username === "admin")) {
-          const merged = [...INITIAL_MOCK_USERS, ...parsedUsers]
-          setUsers(merged)
-          localStorage.setItem(USERS_KEY, JSON.stringify(merged))
-        } else {
-          setUsers(parsedUsers)
-        }
-      } catch (e) {
-        console.error("Failed to load users", e)
-      }
-    } else {
-      // First time initialization: save default mocks
-      localStorage.setItem(USERS_KEY, JSON.stringify(INITIAL_MOCK_USERS))
-    }
-    
-    setIsLoading(false)
+    // Load all users from backend
+    fetchUsers().finally(() => setIsLoading(false))
   }, [])
 
   const login = async (username: string, password: string) => {
-    await new Promise(resolve => setTimeout(resolve, 800))
+    // Give backend time to spin up if it's the first render, so sync the userlist real quick:
+    let currentUsers = users;
+    try {
+      const res = await fetch(AUTH_API)
+      if (res.ok) {
+        currentUsers = await res.json()
+        setUsers(currentUsers)
+      }
+    } catch(e) {
+      console.error(e)
+    }
 
-    const foundUser = users.find(u => u.username === username && u.password === password)
+    const foundUser = currentUsers.find((u: any) => u.username === username && u.password === password)
     
     if (foundUser) {
       const { password: _, ...userWithoutPassword } = foundUser
@@ -121,13 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signup = async (data: Omit<User, "id" | "role"> & { password: string, role?: UserRole }) => {
-    await new Promise(resolve => setTimeout(resolve, 800))
-    
-    if (users.some(u => u.username === data.username)) {
-      throw new Error("El nombre de usuario ya existe")
-    }
-
-    const newUser: User & { password: string } = {
+    const newUserConfig = {
       username: data.username,
       name: data.name,
       email: data.email,
@@ -136,52 +100,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       role: data.role || "user",
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`
     }
-    
-    // Update local state and persistence
-    setUsers(prev => {
-      const updatedUsers = [...prev, newUser]
-      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers))
-      return updatedUsers
-    })
 
-    const { password: _, ...userWithoutPassword } = newUser
-    setUser(userWithoutPassword)
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(userWithoutPassword))
-  }
+    try {
+      const response = await fetch(AUTH_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUserConfig)
+      })
 
-  const updateUser = (updates: Partial<User>) => {
-    if (!user) return
-    const updatedUser = { ...user, ...updates }
-    setUser(updatedUser)
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser))
+      if (!response.ok) {
+        const err = await response.json()
+        throw new Error(err.detail || "Error al registrarse")
+      }
+      
+      const createdUser = await response.json()
+      setUsers(prev => [...prev, createdUser])
 
-    // Also update in users list
-    setUsers(prev => {
-      const updatedUsers = prev.map(u => u.id === user.id ? { ...u, ...updates } : u)
-      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers))
-      return updatedUsers
-    })
-  }
-
-  const promoteUser = (userId: string, role: UserRole) => {
-    setUsers(prev => {
-      const updatedUsers = prev.map(u => u.id === userId ? { ...u, role } : u)
-      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers))
-      return updatedUsers
-    })
-    
-    // If the promoted user is the current user, update their session too
-    if (user && user.id === userId) {
-      updateUser({ role })
+      const { password: _, ...userWithoutPassword } = createdUser
+      setUser(userWithoutPassword)
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(userWithoutPassword))
+    } catch (e: any) {
+      throw new Error(e.message)
     }
   }
 
-  const deleteUser = (userId: string) => {
-    setUsers(prev => {
-      const updatedUsers = prev.filter(u => u.id !== userId)
-      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers))
-      return updatedUsers
-    })
+  const updateUser = async (updates: Partial<User> & { password?: string }) => {
+    if (!user) return
+    
+    // Send to backend
+    try {
+       await fetch(`${AUTH_API}/${user.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates)
+      })
+      
+      // Separate out password to not save it in the current session state or sessionStorage
+      const { password, ...safeUpdates } = updates
+      const updatedUser = { ...user, ...safeUpdates }
+      setUser(updatedUser)
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser))
+
+      // Also update in users list
+      setUsers(prev => prev.map(u => u.id === user.id ? { ...u, ...updates } : u))
+      
+    } catch(e) {
+      console.error("Couldnt update user", e)
+    }
+  }
+
+  const promoteUser = async (userId: string, role: UserRole) => {
+    if (user && user.id === userId) {
+      updateUser({ role })
+      return
+    }
+
+    try {
+      await fetch(`${AUTH_API}/${userId}`, {
+       method: "PUT",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ role })
+     })
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role } : u))
+    } catch(e) {
+      console.error(e)
+    }
+  }
+
+  const deleteUser = async (userId: string) => {
+    if (user && user.id === userId) {
+      logout()
+    }
+    try {
+      await fetch(`${AUTH_API}/${userId}`, { method: "DELETE" })
+      setUsers(prev => prev.filter(u => u.id !== userId))
+    } catch(e) {
+      console.error(e)
+    }
   }
 
   return (

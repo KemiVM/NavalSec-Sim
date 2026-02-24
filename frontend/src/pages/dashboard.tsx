@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { SimulationService, DataService } from "@/services/api"
 import type { NavalSystem, SystemLog } from "@/types/api"
-import { Activity, Server, Shield, Clock, AlertTriangle } from "lucide-react"
+import { Activity, Server, Shield, Clock, AlertTriangle, ShieldAlert } from "lucide-react"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -129,7 +129,24 @@ export function Dashboard() {
       )}
 
       {/* Top Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <motion.div variants={item}>
+             <Card className="relative overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <ShieldAlert className="h-24 w-24 text-red-500" />
+                </div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">{t("dashboard.cyberThreats") || "Amenazas Cibernéticas"}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-4xl font-bold text-red-500">
+                        <NumberTicker value={logs.filter(l => l.is_attack).length} />
+                    </div>
+                     <p className="text-xs text-muted-foreground mt-1">Registradas históricamente</p>
+                </CardContent>
+            </Card>
+        </motion.div>
+
         <motion.div variants={item}>
             <Card className="relative overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300">
                 <div className="absolute top-0 right-0 p-4 opacity-10">

@@ -70,6 +70,17 @@ export function Perfil() {
     toast.success("Perfil actualizado con éxito")
   }
 
+  const handleUpdateSecurity = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.password) {
+      toast.error("Debe introducir una nueva contraseña")
+      return
+    }
+    updateUser({ password: formData.password })
+    setFormData(prev => ({ ...prev, password: "" }))
+    toast.success("Contraseña actualizada con éxito")
+  }
+
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -257,7 +268,7 @@ export function Perfil() {
               </CardTitle>
               <CardDescription>Cambie su contraseña periódicamente para mantener la seguridad.</CardDescription>
             </CardHeader>
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form onSubmit={handleUpdateSecurity}>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="perf-pass">Nueva Contraseña</Label>
@@ -275,7 +286,7 @@ export function Perfil() {
                 </div>
               </CardContent>
               <CardFooter className="justify-end border-t bg-muted/50 py-3">
-                <Button variant="secondary" size="sm">Actualizar Seguridad</Button>
+                <Button type="submit" variant="secondary" size="sm">Actualizar Seguridad</Button>
               </CardFooter>
             </form>
           </Card>

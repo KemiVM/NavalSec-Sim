@@ -4,7 +4,7 @@ import httpx
 import asyncio
 import logging
 from app.core.settings import settings
-from app.api.routes import health, systems
+from app.api.routes import health, systems, auth
 from contextlib import asynccontextmanager
 from app.core.simulator import simulator_instance 
 from fastapi.middleware.cors import CORSMiddleware 
@@ -72,12 +72,18 @@ async def run_simulation():
                         # Enviamos POST al microservicio de datos
                         try:
                             await client.post(settings.DATA_COLLECTOR_URL, json=payload)
-                            # Clear attack flag after sending
-                            system.under_attack_ip = None
                         except httpx.RequestError as e:
                             logger.error(f"Error de conexión enviando datos: {e}")
                         except Exception as e:
                             logger.error(f"Error inesperado enviando datos: {e}")
+
+                    # Manage Attack Persistence: Hold it for 3 seconds so the frontend can poll it
+                    if system.under_attack_ip:
+                        if not hasattr(system, 'attack_timer'):
+                            system.attack_timer = current_time
+                        elif current_time - system.attack_timer > 3.0:
+                            system.under_attack_ip = None
+                            delattr(system, 'attack_timer')
 
                 if should_log_all:
                     last_log_time = current_time
@@ -130,6 +136,7 @@ def get_application() -> FastAPI:
     # Registramos las rutas
     application.include_router(health.router, tags=["Health"])
     application.include_router(systems.router, prefix="/api/systems", tags=["Systems"])
+    application.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 
     @application.get("/")
     async def root():
