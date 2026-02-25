@@ -1,16 +1,16 @@
-# 🚢 NAVALSEC - Ship Simulator V3.0
+# NAVALSEC
 
 Sistema profesional de monitorización y simulación naval con arquitectura de microservicios y capacidades de ciberdefensa.
 
 <img width="1920" height="905" alt="image" src="https://github.com/user-attachments/assets/3e611539-0183-4851-a2d8-c1f41cf4adca" />
 
-## 📋 Descripción
+## Descripción
 
 **NAVALSEC** es una plataforma de alta fidelidad para la simulación y gestión de sistemas críticos en entornos marítimos. Diseñada para operadores y entrenamiento técnico, permite supervisar en tiempo real el estado de propulsión, generación eléctrica, seguridad y navegación.
 
-La interfaz V3 incorpora una **estética Neon Cyberpunk de nivel industrial**, eliminando informalidades y priorizando la legibilidad técnica mediante una iconografía SVG precisa y un sistema de localización bilingüe (Español/Inglés).
+La interfaz incorpora una **estética profesional**, priorizando la legibilidad técnica mediante una iconografía SVG precisa y un sistema de localización bilingüe (Español/Inglés).
 
-## ✨ Características de Vanguardia
+## Características
 
 - **Monitorización Multisistema**: Control centralizado sobre el Motor Principal, Generador Auxiliar, Bombas de Achique, Radar Banda-X, Sistema de Gobierno y Contraincendios.
 - **Seguridad y Roles de Usuario**:
@@ -25,7 +25,7 @@ La interfaz V3 incorpora una **estética Neon Cyberpunk de nivel industrial**, e
 - **Simulación Física Realista**: Comportamiento dinámico de sensores con inercia térmica, picos matemáticos controlados y respuesta física coherente al estado de los relés.
 - **Guía Técnica Integrada**: Manual profesional "in-game" con procedimientos de recuperación y resolución de problemas (Troubleshooting).
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 ### Frontend
 
@@ -40,7 +40,7 @@ La interfaz V3 incorpora una **estética Neon Cyberpunk de nivel industrial**, e
 - **Docker & Docker Compose**: Orquestación dinámica y despliegue inmutable.
 - **SQLite**: Persistencia de logs de sistemas, histórico de anomalías y DB centralizada de cuentas de usuario cifradas.
 
-## 🚀 Instalación Rápida
+## Instalación Rápida
 
 1.  **Clonación**:
 
@@ -60,7 +60,7 @@ La interfaz V3 incorpora una **estética Neon Cyberpunk de nivel industrial**, e
     - **Exploit Terminal Independiente (Móvil)**: `http://TU-IP-WIFI:8080/hacker.html`
     - **Documentación API Backend**: [http://localhost:8001/docs](http://localhost:8001/docs)
 
-## 📂 Arquitectura
+## Arquitectura
 
 ```
 navalsec-sim/
@@ -71,7 +71,7 @@ navalsec-sim/
 └── docker-compose.yml  # Configuración de red y contenedores Nginx
 ```
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto se distribuye bajo la **Licencia MIT**. Consulte el archivo `LICENSE` para más detalles.
 
