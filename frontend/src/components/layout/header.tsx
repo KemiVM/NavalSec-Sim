@@ -8,24 +8,93 @@ import { cn } from "@/lib/utils"
 import { useTheme } from "@/contexts/ThemeContext"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useAuth } from "@/contexts/AuthContext"
+import { useNavigate } from "react-router-dom"
+import { DataService } from "@/services/api"
+import type { SystemLog } from "@/types/api"
 
 export function Header() {
   const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification, clearNotifications } = useNotifications()
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
   const { user } = useAuth()
+  const navigate = useNavigate()
+  
   const [showNotifications, setShowNotifications] = useState(false)
   const notifRef = useRef<HTMLDivElement>(null)
+
+  // Search State
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchResults, setSearchResults] = useState<{
+    nav: { label: string, path: string }[],
+    actions: { label: string, action: () => void }[],
+    logs: SystemLog[]
+  }>({ nav: [], actions: [], logs: [] })
+  const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
         setShowNotifications(false)
       }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false)
+      }
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
+  
+  useEffect(() => {
+     if (!searchQuery.trim()) {
+         setSearchResults({ nav: [], actions: [], logs: [] })
+         return
+     }
+
+     const query = searchQuery.toLowerCase()
+
+     // 1. Navigation matches
+     const routes = [
+         { label: t("sidebar.dashboard"), path: "/" },
+         { label: t("sidebar.simulation"), path: "/simulacion" },
+         { label: t("sidebar.faults"), path: "/fallos" },
+         { label: t("sidebar.history"), path: "/historico" },
+         { label: t("sidebar.settings"), path: "/ajustes" },
+         { label: t("header.profile"), path: "/perfil" },
+     ]
+     const navMatches = routes.filter(r => r.label && r.label.toLowerCase().includes(query))
+
+     // 2. Action matches
+     const actionsList = [
+         { label: `${t("settings.theme")}: ${t("settings.light")}`, action: () => { setTheme("light"); setIsSearchOpen(false) } },
+         { label: `${t("settings.theme")}: ${t("settings.dark")}`, action: () => { setTheme("dark"); setIsSearchOpen(false) } },
+         { label: `${t("settings.language")}: Español`, action: () => { setLanguage("es"); setIsSearchOpen(false) } },
+         { label: `${t("settings.language")}: English`, action: () => { setLanguage("en"); setIsSearchOpen(false) } },
+     ]
+     const actionMatches = actionsList.filter(a => a.label && a.label.toLowerCase().includes(query))
+
+     // 3. Set local matches immediately
+     setSearchResults(prev => ({ ...prev, nav: navMatches, actions: actionMatches }))
+
+     // 4. Fetch async logs matches
+     const delayDebounceFn = setTimeout(async () => {
+         try {
+             // Pass searchQuery to backend log filter if api supports or simply get latest and filter locally
+             const logs = await DataService.getLogs(50) 
+             // Local filter over fetched logs
+             const logMatches = logs.filter(l => 
+                (l.system_id && l.system_id.toLowerCase().includes(query)) ||
+                (l.system_name && l.system_name.toLowerCase().includes(query)) ||
+                (l.sensor_data && l.sensor_data.toLowerCase().includes(query))
+             ).slice(0, 5) // keep it small for dropdown
+             setSearchResults(prev => ({ ...prev, logs: logMatches }))
+         } catch (e) {
+             console.error("Search fetch error", e)
+         }
+     }, 300)
+
+     return () => clearTimeout(delayDebounceFn)
+  }, [searchQuery, t])
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -43,13 +112,116 @@ export function Header() {
       </Button>
       
       <div className="flex-1">
-        <div className="relative max-w-md hidden md:block group">
+        <div className="relative max-w-md hidden md:block group" ref={searchRef}>
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
           <Input
             type="search"
             placeholder={t("header.search")}
             className="w-full bg-muted/40 pl-9 focus-visible:ring-primary/20 transition-all duration-300 border-transparent focus:border-primary/50 focus:bg-background shadow-sm hover:shadow-md"
+            value={searchQuery}
+            onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setIsSearchOpen(true)
+            }}
+            onFocus={() => {
+                if (searchQuery) setIsSearchOpen(true)
+            }}
+            onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                    setIsSearchOpen(false)
+                    searchRef.current?.querySelector("input")?.blur()
+                }
+            }}
           />
+          
+          {/* Search Dropdown */}
+          {isSearchOpen && searchQuery.trim() && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-card border shadow-xl rounded-xl z-50 overflow-hidden flex flex-col max-h-[70vh] animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="overflow-y-auto p-2">
+                       {searchResults.nav.length === 0 && searchResults.actions.length === 0 && searchResults.logs.length === 0 ? (
+                           <div className="p-4 text-center text-sm text-muted-foreground">
+                               {t("header.noSearchResults") || "No se encontraron resultados"}
+                           </div>
+                       ) : (
+                           <div className="space-y-4">
+                               {/* Navigation Matches */}
+                               {searchResults.nav.length > 0 && (
+                                   <div>
+                                       <h3 className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("header.searchNav") || "Navegación"}</h3>
+                                       {searchResults.nav.map(nav => (
+                                           <button 
+                                                key={nav.path}
+                                                className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-muted font-medium transition-colors flex items-center justify-between group"
+                                                onClick={() => {
+                                                    navigate(nav.path)
+                                                    setIsSearchOpen(false)
+                                                    setSearchQuery("")
+                                                }}
+                                            >
+                                                {nav.label}
+                                                <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">{t("header.searchGo") || "Go"}</span>
+                                            </button>
+                                       ))}
+                                   </div>
+                               )}
+                               
+                               {/* Actions Matches */}
+                               {searchResults.actions.length > 0 && (
+                                   <div>
+                                       <h3 className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("header.searchActions") || "Acciones"}</h3>
+                                       {searchResults.actions.map(act => (
+                                           <button 
+                                                key={act.label}
+                                                className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-muted font-medium transition-colors flex items-center justify-between group"
+                                                onClick={() => {
+                                                    act.action()
+                                                    setSearchQuery("")
+                                                }}
+                                            >
+                                                {act.label}
+                                                <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">{t("header.searchApply") || "Apply"}</span>
+                                            </button>
+                                       ))}
+                                   </div>
+                               )}
+                               
+                               {/* Logs Matches */}
+                               {searchResults.logs.length > 0 && (
+                                   <div>
+                                       <h3 className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("header.searchLogs") || "Eventos Recientes"}</h3>
+                                       {searchResults.logs.map(log => (
+                                           <button 
+                                                key={log.id}
+                                                className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-muted font-medium transition-colors flex flex-col gap-1 border-b border-border/50 last:border-0"
+                                                onClick={() => {
+                                                    navigate("/historico")
+                                                    setIsSearchOpen(false)
+                                                    setSearchQuery("")
+                                                }}
+                                            >
+                                                <div className="flex items-center justify-between w-full">
+                                                    <span className={cn(
+                                                        "font-semibold",
+                                                        log.is_attack ? "text-destructive" : log.is_abnormal ? "text-yellow-500" : ""
+                                                    )}>{log.system_id}</span>
+                                                    <span className="text-[10px] text-muted-foreground">
+                                                        {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
+                                                {log.sensor_data && (
+                                                    <span className="text-xs text-muted-foreground truncate w-full">
+                                                        {log.sensor_data.length > 50 ? `${log.sensor_data.substring(0, 50)}...` : log.sensor_data}
+                                                    </span>
+                                                )}
+                                            </button>
+                                       ))}
+                                   </div>
+                               )}
+                           </div>
+                       )}
+                  </div>
+              </div>
+          )}
         </div>
       </div>
 

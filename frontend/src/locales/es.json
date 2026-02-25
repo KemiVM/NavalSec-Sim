@@ -7,7 +7,13 @@
     "noNotifications": "No hay notificaciones",
     "admin": "Administrador",
     "operator": "Operador",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "noSearchResults": "No se encontraron resultados",
+    "searchNav": "Navegación",
+    "searchActions": "Acciones",
+    "searchLogs": "Eventos Recientes",
+    "searchGo": "Ir",
+    "searchApply": "Aplicar"
   },
   "login": {
     "subtitle": "Simulación y Control Naval Avanzado",
@@ -17,8 +23,16 @@
     "password": "Contraseña",
     "login": "Iniciar Sesión",
     "signup": "Crear Cuenta",
+    "adminCode": "Código de Autorización (Opcional)",
+    "adminCodeDesc": "Para crear cuenta de Administrador",
+    "processing": "Procesando...",
+    "enterSystem": "Entrar al Sistema",
     "noAccount": "¿No tiene cuenta? Regístrese aquí",
-    "hasAccount": "¿Ya tiene cuenta? Inicie sesión"
+    "hasAccount": "¿Ya tiene cuenta? Inicie sesión",
+    "invalidAdminCode": "El código de administrador es incorrecto",
+    "errorOccurred": "Ocurrió un error",
+    "signInDesc": "Ingrese sus credenciales para acceder al sistema.",
+    "signUpDesc": "Complete los datos para registrarse en la plataforma."
   },
   "profile": {
     "title": "Mi Perfil",
@@ -27,7 +41,23 @@
     "security": "Seguridad de la Cuenta",
     "logout": "Cerrar Sesión",
     "saveChanges": "Guardar Cambios",
-    "updateSecurity": "Actualizar Seguridad"
+    "updateSecurity": "Actualizar Seguridad",
+    "newPassword": "Nueva Contraseña",
+    "online": "En Línea",
+    "avatarLibrary": "Biblioteca de Avatares",
+    "avatarLocallySaved": "* Las imágenes personalizadas se guardan localmente.",
+    "personalInfoDesc": "Actualice sus datos de contacto y nombre público.",
+    "securityDesc": "Cambie su contraseña periódicamente para mantener la seguridad.",
+    "leaveBlank": "Dejar en blanco para no cambiar",
+    "messages": {
+        "avatarUpdated": "Imagen de perfil actualizada",
+        "avatarSelected": "Avatar seleccionado",
+        "imageTooLarge": "La imagen es demasiado grande (máximo 2MB)",
+        "uploadSuccess": "Imagen subida con éxito",
+        "profileUpdated": "Perfil actualizado con éxito",
+        "passwordRequired": "Debe introducir una nueva contraseña",
+        "securityUpdated": "Contraseña actualizada con éxito"
+    }
   },
   "sidebar": {
     "dashboard": "Panel de Control",
@@ -46,7 +76,42 @@
     "dark": "Oscuro",
     "system": "Sistema",
     "language": "Idioma del Sistema",
-    "simParams": "Parámetros del Ciclo"
+    "simParams": "Parámetros del Ciclo",
+    "addIp": "Añadir IP",
+    "personnelManagement": "Gestión de Personal y Permisos",
+    "user": "Usuario",
+    "email": "Email",
+    "currentRole": "Rol Actual",
+    "actions": "Acciones",
+    "subtitle": "Configuración técnica del simulador y personalización de la interfaz.",
+    "appearanceDesc": "Personaliza cómo se ve y se lee la aplicación.",
+    "simParamsDesc": "Ajusta los tiempos de ejecución y refresco.",
+    "uiRefresh": "Refresco de Interfaz (ms)",
+    "uiRefreshDesc": "Intervalo en milisegundos para las peticiones GET al simulador.",
+    "logInterval": "Intervalo de Bitácora (seg)",
+    "logIntervalDesc": "Frecuencia con la que el servidor inyecta logs de estado NOMINAL en la base de datos.",
+    "whitelist": "Ciberseguridad | Lista Blanca de IPs",
+    "whitelistDesc": "Direcciones IP autorizadas para realizar cambios en sensores sin disparar alertas de ataque.",
+    "ipPlaceholder": "Ej: 192.168.1.50",
+    "viewCustomization": "Personalización de Vistas (Dashboard y Simulación)",
+    "viewCustomizationDesc": "Configura la visibilidad y el orden de los sistemas en las páginas principales.",
+    "systemVisibility": "Visibilidad de Sistemas",
+    "dashboardOrder": "Orden en Dashboard",
+    "simulationOrder": "Orden en Simulación",
+    "personnelDesc": "Otorga privilegios de administrador o revócalos para el resto de usuarios.",
+    "revokeAdmin": "Revocar Admin",
+    "makeAdmin": "Hacer Admin",
+    "youCurrent": "Tú (Actual)",
+    "messages": {
+        "errorUpdateBackend": "Error al actualizar el servidor",
+        "ipAdded": "IP añadida a la lista blanca",
+        "errorAddIp": "Error al añadir IP",
+        "confirmRemoveIp": "¿Está seguro de que desea eliminar esta IP de la lista blanca?",
+        "ipRemoved": "IP eliminada",
+        "errorRemoveIp": "Error al eliminar IP",
+        "confirmDeleteUser": "¿ESTÁ SEGURO? Esta acción eliminará permanentemente al usuario seleccionado. Esta acción no se puede deshacer.",
+        "userDeleted": "Usuario eliminado del sistema"
+    }
   },
   "dashboard": {
     "title": "Monitorización de Superficie",
@@ -74,7 +139,10 @@
         "active": "En Servicio",
         "fault": "Fallo / Disparado",
         "inactive": "Fuera de Servicio"
-    }
+    },
+    "shipPlan": "Plano del Buque",
+    "systemFaultMsg": "Sistema en fallo",
+    "altSidebar": "Plano Lateral Embarcación"
   },
   "simulation": {
     "title": "Consola de Telemetría",
@@ -115,10 +183,22 @@
     "falseValue": "Magnitud de Inyección",
     "durationShort": "Duración (seg)",
     "executeCyber": "Ejecutar Vector de Suplantación",
+    "secureLink": "SECURE LINK ONLINE",
+    "pentestEnabled": "PENTEST ENABLED",
+    "secondsDesc": "SEG",
+    "forceDrop": "FORZAR CAÍDA RED",
+    "overwriteData": "SOBREESCRIBIR DATOS",
+    "completed": "COMPLETADO",
+    "platformDesc1": "Plataforma unificada para pruebas de estrés. Inyecte datos anómalos físicamente ",
+    "platformDesc2": " o comprometa el sistema remotamente desde el ",
+    "platformDesc3": ".",
     "messages": {
         "success": "Operación ejecutada con éxito",
         "errorRelay": "Error en la inyección de fallo de protección física",
-        "errorSensor": "Error en la inyección de vector de suplantación"
+        "errorSensor": "Error en la inyección de vector de suplantación",
+        "physicalSuccess": "INYECCIÓN FÍSICA EXITOSA",
+        "securityAlert": "ALERTA DE SEGURIDAD DETONADA",
+        "spoofingAlert": "SPOOFING MASIVO DETONADO"
     }
   },
   "data": {
@@ -153,5 +233,73 @@
     "ANGLE": "Ángulo de Deflexión",
     "RANGE": "Rango de Detección",
     "SMOKE": "Nivel de Humos"
+  },
+  "help": {
+    "title": "Centro de Ayuda NAVALSEC",
+    "subtitle": "Guía exhaustiva, manual de usuario y resolución de problemas del simulador naval.",
+    "tabSystems": "1. Guía de Sistemas Navales",
+    "tabManual": "2. Manual de la Interfaz",
+    "tabTroubleshooting": "3. Solución de Problemas",
+    "systems": {
+      "title": "Sistemas Navales Simulados",
+      "desc": "Comprende la física y operación térmica/mecánica detrás de cada subsistema de la embarcación.",
+      "engine": "Motor Principal (Main Engine)",
+      "engineDesc1": "El corazón propulsor del barco. Este sistema diésel pesado se ve afectado principalmente por dos variables que se simulan volumétrica e inercialmente:",
+      "engineLi1": "<strong>Revoluciones (RPM):</strong> La velocidad de giro. Valores normales rondan las 1000 RPM. Superar las 1200 RPM somete al motor a estrés.",
+      "engineLi2": "<strong>Temperatura (°C):</strong> Crece lentamente de forma gradual simulando la inercia térmica del bloque del motor. Una refrigeración deficiente disparará la temperatura por encima de los 100°C forzando el salto del relé térmico para evitar la fusión del bloque.",
+      "engineRisk": "Riesgo: Un corte abrupto dejará la embarcación a la deriva sin propulsión.",
+      "aux": "Generador Auxiliar (Aux Generator)",
+      "auxDesc1": "Encargado de dotar de corriente eléctrica alterna a toda la infraestructura de la nave.",
+      "auxLi1": "<strong>Voltaje (V):</strong> Oscila de forma sinusoidal buscando mantenerse anclado en los 220V/400V estables según el régimen. Un voltaje inestable fundirá fusibles.",
+      "auxLi2": "<strong>Frecuencia (Hz):</strong> Estable a 50/60Hz. Representa la calidad de la onda magnética generada. Si los polos se sobrecargan magnéticamente la frecuencia varía antes del colapso del sistema.",
+      "auxRisk": "Riesgo: La caída del generador provoca un \"Blackout\" apagando cuadros principales.",
+      "bilge": "Bombas de Achique (Bilge System)",
+      "bilgeDesc1": "Gestionan y mantienen seco el fondo y sentina de la embarcación del constante filtrado de aguas oceánicas e internas.",
+      "bilgeLi1": "<strong>Nivel de Agua (cm):</strong> Monitoriza qué tan inundada está la cámara inferior. Las bombas extraen agua automáticamente a un ratio fijo (ej: 0.5 cm por segundo).",
+      "bilgeLi2": "<strong>Caudal (L/s):</strong> La capacidad de extracción vigente.",
+      "bilgeRisk": "La simulación inyecta un volumen residual constante. Si se desactiva la bomba, el nivel ascenderá simulando una vía de agua interna. Superar el umbral máximo representa un riesgo inminente para la flotabilidad de la nave.",
+      "radar": "Sistema de Radar (Radar System)",
+      "radarDesc1": "Proporciona \"conciencia situacional\" (visibilidad en millas náuticas) previniendo colisiones.",
+      "radarLi1": "<strong>Rango (nm):</strong> Alcance de las dianas devueltas. Un ataque de interferencia de radiofrecuencia (Jamming) puede truncar dramáticamente esta visibilidad.",
+      "radarLi2": "<strong>Frecuencia de Barrido (GHz):</strong> Sensibilidad del aparato. Una bajada indica degradación del emisor magneto-resonante.",
+      "steering": "Sistema de Gobierno (Steering)",
+      "steeringDesc1": "Control hidráulico-mecánico de la pala del timón en popa que direcciona el navío.",
+      "steeringLi1": "<strong>Presión Hidráulica (bar):</strong> Requiere más de 120 bares para ser gobernable. Caídas de presión indican fugas en las tuberías y causarán retrasos en el gobierno del puente de mando.",
+      "steeringLi2": "<strong>Ángulo del Timón (°):</strong> La posición fáctica del deflector.",
+      "fire": "Contraincendios (Fire Suppression)",
+      "fireDesc1": "El sistema de extinción por red de rociadores o agentes químicos.",
+      "fireProtocol": "<strong>Protocolo de Emergencia:</strong> La detección de fuego activa automáticamente el aislamiento eléctrico del sistema afectado. Requiere supervisión humana inmediata.",
+      "fireLi1": "<strong>Presión del Colector (bar):</strong> Similar al gobierno, la red debe estar constantemente presurizada, a punto para saltar.",
+      "fireLi2": "<strong>Detectores de Humo y Temperatura:</strong> Son la variable disparadora; al subir saltarán las electroválvulas expulsando el agente en toda la cámara afectada."
+    },
+    "manual": {
+      "title": "Manual de Usuario | Interfaces",
+      "dashTitle": "Tu Dashboard Principal",
+      "dashDesc1": "Representa la perspectiva cenital de la unidad naval. Implementa un sistema de <strong>indicadores interactivos (Hotspots)</strong>:",
+      "dashLi1": "<strong>Indicadores Verdes (Frecuencia normal):</strong> Funcionamiento nominal del subsistema.",
+      "dashLi2": "<strong>Indicadores Grises (Inactivos):</strong> Desactivación manual del sistema. Esto puede comprometer funciones dependientes (ej. la desactivación del achique provoca inundación).",
+      "dashLi3": "<strong>Indicadores Rojos (Frecuencia elevada):</strong> Estado de Disparo (TRIPPED). Indica un fallo crítico o intrusión detectada.",
+      "dashDesc2": "Si pones el ratón sobre un punto visualizarás una tarjeta opaca con telemetría en vivo, si das click navegarás a su consola de mando.",
+      "simTitle": "Sala de Control (Simulación)",
+      "simDesc1": "La Sala de Control o Telemétrica te ofrece <strong>gráficas en tiempo real</strong> de todos los subsistemas actualizándose a 2 Hz.",
+      "simDesc2": "Puedes forzar anomalías en estas gráficas manualmente inyectando \"Fuerza Bruta\" o \"Inyección de Señales\" pulsando los botones de debajo de la gráfica. Esto corromperá temporalmente los sensores como simulación a una amenaza cibernética o fallo de sensor I/O.",
+      "dataTitle": "Historial de Datos",
+      "dataDesc1": "La grabadora de vuelo y cuaderno de bitácora del barco. Posee 3 divisiones críticas:",
+      "dataLi1": "<strong>Informes Normales:</strong> Cada 20 segundos el ordenador captura el estado perfecto del barco y lo encripta en logs verdes silenciosos.",
+      "dataLi2": "<strong>Advertencias (Amarillas):</strong> Si un sensor entra en un umbral del `90%` del máximo soportable (ej: temperatura motor rozando los 97°C), el sistema interrumpe el reloj de los 20 segundos y <strong>fuerza la inyección de un log inmediato</strong>. Aisla estos logs con el botón amarillo para intuir problemas preventivamente.",
+      "dataLi3": "<strong>Críticas (Rojas):</strong> Se almacenan en el momento exacto en el que el relé salta producto del sensor alcanzando su límite máximo absoluto (ej: 100°C extrictos). Son los expedientes de fallo y colapsos."
+    },
+    "trouble": {
+      "title": "Troubleshooting de Emergencia",
+      "subtitle": "Manual de procedimientos operativos y reactivos (SOP) ante anomalías del sistema NAVALSEC.",
+      "q1": "¿Por qué han saltado alertas rojas (TRIPPED) globales?",
+      "a1": "Un estado `TRIPPED` implica un apagado de emergencia no programado. El sistema \"rompió\" el cicuito por que uno de los sensores traspasó la barrera límite de supervivencia del equipo (Safe Max / Safe Min). Esto previno que el bloque del motor prendiera fuego o que el generador explotara por un cortocircuito sostenido.",
+      "q2": "¿Cómo recupero mi sistema tras un TRIPPED?",
+      "a2Li1": "De forma predeterminada, el agente software de abordo de la simulación rearmará el relé térmico/magnético automáticamente pasados 5-7 segundos por considerarlo un fallo transitorio. Verás que la vista vuelve a verde.",
+      "a2Li2": "Si la condición de fallo persiste (por ejemplo, una inundación crítica no evacuada o un vector de suplantación activo de alta frecuencia), el sistema reingresará en estado TRIPPED de forma inmediata, generando notificaciones persistentes.",
+      "a2Li3": "<strong>Rearme Manual:</strong> Acceda al panel de Inyección para neutralizar el vector de ataque o reconfigure el relé manualmente desde la Sala de Control tras normalizar las lecturas de los sensores.",
+      "q3": "¿Qué indica una IP 'Desconocida' en un Ciberataque?",
+      "a3": "El colector de registros audita todas las peticiones contra una lista de confianza. Si se detecta un paquete cuya firma IP no coincide con la del subsistema origen, el cortafuegos registrará el evento como intrusión. Estas direcciones IP suplantadas pueden monitorizarse en el registro detallado de la Bitácora."
+    }
   }
 }

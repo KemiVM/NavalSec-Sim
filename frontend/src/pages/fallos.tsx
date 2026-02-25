@@ -95,14 +95,14 @@ export function Fallos() {
           await FaultsService.injectSensorAttack(labSystemId, labSensorId, labValue, labDuration)
           toast.success(
             <div className="flex flex-col gap-1">
-              <span className="font-bold text-cyan-700 dark:text-cyan-400">INYECCIÓN FÍSICA EXITOSA</span>
+              <span className="font-bold text-cyan-700 dark:text-cyan-400">{t("faults.messages.physicalSuccess") || "INYECCIÓN FÍSICA EXITOSA"}</span>
               <span className="text-xs text-slate-600 dark:text-slate-300">Alteración en {labSystem?.name} &gt; Sensor {labSensorId} durante {labDuration}s.</span>
             </div>,
             { className: "bg-white dark:bg-slate-900 border-cyan-500" }
           )
           addLog('sensor', `${labSystemId} / ${labSensorId}`, "Internal", labDuration)
       } catch (err) {
-          toast.error("Error en inyección física del Laboratorio")
+          toast.error(t("faults.messages.errorRelay") || "Error en inyección física")
       } finally {
         setIsLabLoading(false)
       }
@@ -116,14 +116,14 @@ export function Fallos() {
           await FaultsService.injectRelayFault(cyberSystemId, cyberDuration, cyberIp)
           toast.error(
             <div className="flex flex-col gap-1">
-              <span className="font-bold text-red-600 dark:text-red-500">ALERTA DE SEGURIDAD DETONADA</span>
+              <span className="font-bold text-red-600 dark:text-red-500">{t("faults.messages.securityAlert") || "ALERTA DE SEGURIDAD DETONADA"}</span>
               <span className="text-xs text-slate-600 dark:text-slate-300">Intento de TRIP en Relé del {cyberSystem?.name} originado en {cyberIp}.</span>
             </div>,
             { className: "bg-red-50 dark:bg-[#2a0909] border-red-500" }
           )
           addLog('relay', `RELAY_${cyberSystemId}`, cyberIp, cyberDuration)
       } catch (err) {
-          toast.error("Error al establecer la conexión de ataque")
+          toast.error(t("faults.messages.errorSensor") || "Error al establecer la conexión")
       } finally {
         setIsCyberLoading(false)
       }
@@ -137,14 +137,14 @@ export function Fallos() {
           await FaultsService.injectSensorAttack(cyberSystemId, cyberSensorId, 9999, cyberDuration, cyberIp)
           toast.error(
             <div className="flex flex-col gap-1">
-              <span className="font-bold text-red-600 dark:text-red-500">SPOOFING MASIVO DETONADO</span>
+              <span className="font-bold text-red-600 dark:text-red-500">{t("faults.messages.spoofingAlert") || "SPOOFING MASIVO DETONADO"}</span>
               <span className="text-xs text-slate-600 dark:text-slate-300">Sobreescritura en {cyberSystem?.name} &gt; {cyberSensorId} originado en {cyberIp}.</span>
             </div>,
             { className: "bg-red-50 dark:bg-[#2a0909] border-red-500" }
           )
           addLog('sensor', `${cyberSystemId} / ${cyberSensorId}`, cyberIp, cyberDuration)
       } catch (err) {
-          toast.error("Error al establecer la conexión de ataque")
+          toast.error(t("faults.messages.errorSensor") || "Error al establecer la conexión")
       } finally {
         setIsCyberLoading(false)
       }
@@ -186,17 +186,17 @@ export function Fallos() {
               </h1>
             </div>
             <p className="text-slate-600 dark:text-slate-400 max-w-3xl text-lg font-medium leading-relaxed">
-              Plataforma unificada para pruebas de estrés. Inyecte datos anómalos físicamente <strong className="text-cyan-600 dark:text-cyan-400">Laboratorio de Sensores</strong> o comprometa el sistema remotamente desde el <strong className="text-red-600 dark:text-red-400">Centro de Operaciones de Ciberseguridad</strong>.
+              {t("faults.platformDesc1") || "Plataforma unificada. Inyecte datos físicamente "}<strong className="text-cyan-600 dark:text-cyan-400">{t("faults.sensorModule") || "Laboratorio"}</strong>{t("faults.platformDesc2") || " o remotamente "}<strong className="text-red-600 dark:text-red-400">{t("faults.cyberModule") || "Centro SOC"}</strong>{t("faults.platformDesc3") || "."}
             </p>
           </div>
           <div className="hidden md:flex flex-col gap-2 items-end">
             <div className="flex items-center gap-2 px-3 py-1.5 border border-cyan-200 dark:border-cyan-500/20 bg-cyan-50 dark:bg-cyan-500/10 rounded-full">
                <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-               <span className="text-xs font-bold text-cyan-600 dark:text-cyan-400 tracking-wider">SECURE LINK ONLINE</span>
+               <span className="text-xs font-bold text-cyan-600 dark:text-cyan-400 tracking-wider">{t("faults.secureLink") || "SECURE LINK ONLINE"}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 rounded-full">
                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-               <span className="text-xs font-bold text-red-600 dark:text-red-500 tracking-wider">PENTEST ENABLED</span>
+               <span className="text-xs font-bold text-red-600 dark:text-red-500 tracking-wider">{t("faults.pentestEnabled") || "PENTEST ENABLED"}</span>
             </div>
           </div>
         </div>
@@ -283,7 +283,7 @@ export function Fallos() {
                         onChange={e => setLabDuration(Number(e.target.value))}
                         min={1}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-bold text-xs">SEG</span>
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-bold text-xs">{t("faults.secondsDesc") || "SEG"}</span>
                     </div>
                   </div>
                 </div>
@@ -403,7 +403,7 @@ export function Fallos() {
                   disabled={!cyberSystemId || isCyberLoading}
                 >
                   <Skull className="h-4 w-4 mb-0.5" />
-                  <span className="text-[10px] font-black tracking-widest uppercase">FORZAR CAÍDA RED</span>
+                  <span className="text-[10px] font-black tracking-widest uppercase">{t("faults.forceDrop") || "FORZAR CAÍDA RED"}</span>
                 </Button>
                 
                 <Button 
@@ -417,7 +417,7 @@ export function Fallos() {
                   disabled={!cyberSensorId || isCyberLoading}
                 >
                   <AlertTriangle className="h-4 w-4 mb-0.5" />
-                  <span className="text-[10px] font-black tracking-widest uppercase">SOBREESCRIBIR DATOS</span>
+                  <span className="text-[10px] font-black tracking-widest uppercase">{t("faults.overwriteData") || "SOBREESCRIBIR DATOS"}</span>
                 </Button>
               </div>
 
@@ -506,7 +506,7 @@ export function Fallos() {
                         ) : (
                           <div className="flex items-center gap-2 text-green-600/70 dark:text-green-500/50 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/10">
                              <CheckCircle2 className="h-4 w-4" />
-                             <span className="text-xs font-bold uppercase tracking-wider">COMPLETADO</span>
+                             <span className="text-xs font-bold uppercase tracking-wider">{t("faults.completed") || "COMPLETADO"}</span>
                           </div>
                         )}
                       </div>

@@ -29,7 +29,7 @@ export function ShipView({ systems, className }: { systems: NavalSystem[], class
       {/* Background Image of the Ship */}
       <img 
         src="/Barco Lateral (1).png" 
-        alt="Plano Lateral Embarcación" 
+        alt={t("dashboard.altSidebar") || "Plano Lateral Embarcación"}
         className="w-full h-auto object-contain block opacity-90"
         onClick={(e) => {
             if (import.meta.env.DEV) {
@@ -97,7 +97,7 @@ export function ShipView({ systems, className }: { systems: NavalSystem[], class
               {isTripped && (
                   <div className="mt-2 pt-2 border-t border-destructive/20 text-destructive text-[10px] font-bold flex items-center gap-1 uppercase">
                       <AlertTriangle className="w-3 h-3" />
-                      Sistema en fallo
+                      {t("dashboard.systemFaultMsg") || "Sistema en fallo"}
                   </div>
               )}
             </div>
@@ -107,7 +107,7 @@ export function ShipView({ systems, className }: { systems: NavalSystem[], class
 
       <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/80 backdrop-blur-sm p-2 rounded-md border border-border/50">
           <Info className="w-4 h-4 text-primary" />
-          <span className="text-xs font-medium text-foreground">Plano del Buque</span>
+          <span className="text-xs font-medium text-foreground">{t("dashboard.shipPlan") || "Plano del Buque"}</span>
       </div>
     </div>
   )

@@ -77,7 +77,7 @@ export function Parametros() {
       })
       toast.success(t("settings.backendSaved") || "Configuración del servidor actualizada")
     } catch (e) {
-      toast.error("Error al actualizar el servidor")
+      toast.error(t("settings.messages.errorUpdateBackend") || "Error al actualizar el servidor")
     }
   }
 
@@ -88,28 +88,28 @@ export function Parametros() {
         valid_ips: [...backendConfig.valid_ips, newIp]
       })
       setNewIp("")
-      toast.success(`IP ${newIp} añadida a la lista blanca`)
+      toast.success(`${t("settings.messages.ipAdded") || "IP añadida a la lista blanca"}: ${newIp}`)
     } catch (e) {
-      toast.error("Error al añadir IP")
+      toast.error(t("settings.messages.errorAddIp") || "Error al añadir IP")
     }
   }
 
   const handleRemoveIp = async (ip: string) => {
     try {
-      if (!window.confirm(`¿Está seguro de que desea eliminar la IP ${ip} de la lista blanca?`)) return
+      if (!window.confirm(t("settings.messages.confirmRemoveIp") || "¿Está seguro de que desea eliminar la IP de la lista blanca?")) return
       await updateBackendConfig({
         valid_ips: backendConfig.valid_ips.filter(i => i !== ip)
       })
-      toast.success("IP eliminada")
+      toast.success(t("settings.messages.ipRemoved") || "IP eliminada")
     } catch (e) {
-      toast.error("Error al eliminar IP")
+      toast.error(t("settings.messages.errorRemoveIp") || "Error al eliminar IP")
     }
   }
 
   const handleDeleteUser = (userId: string, userName: string) => {
-    if (window.confirm(`¿ESTÁ SEGURO? Esta acción eliminará permanentemente al usuario "${userName}". Esta acción no se puede deshacer.`)) {
+    if (window.confirm(t("settings.messages.confirmDeleteUser") || `¿ESTÁ SEGURO? Esta acción eliminará permanentemente al usuario "${userName}". Esta acción no se puede deshacer.`)) {
       deleteUser(userId)
-      toast.success(`Usuario ${userName} eliminado del sistema`)
+      toast.success(`${t("settings.messages.userDeleted") || "Usuario eliminado"}: ${userName}`)
     }
   }
 
@@ -143,7 +143,7 @@ export function Parametros() {
               {t("sidebar.settings")}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Configuración técnica del simulador y personalización de la interfaz.
+              {t("settings.subtitle") || "Configuración técnica del simulador y personalización de la interfaz."}
             </p>
           </div>
         </div>
@@ -158,7 +158,7 @@ export function Parametros() {
                 <Palette className="h-5 w-5 text-primary" />
                 <CardTitle>{t("settings.appearance") || "Apariencia e Idioma"}</CardTitle>
               </div>
-              <CardDescription>Personaliza cómo se ve y se lee la aplicación.</CardDescription>
+              <CardDescription>{t("settings.appearanceDesc") || "Personaliza cómo se ve y se lee la aplicación."}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
               <div className="space-y-2">
@@ -201,11 +201,11 @@ export function Parametros() {
                 <Activity className="h-5 w-5 text-primary" />
                 <CardTitle>{t("settings.simParams") || "Parámetros del Ciclo"}</CardTitle>
               </div>
-              <CardDescription>Ajusta los tiempos de ejecución y refresco.</CardDescription>
+              <CardDescription>{t("settings.simParamsDesc") || "Ajusta los tiempos de ejecución y refresco."}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
               <div className="space-y-2">
-                <Label>Refresco de Interfaz (ms)</Label>
+                <Label>{t("settings.uiRefresh") || "Refresco de Interfaz (ms)"}</Label>
                 <div className="flex gap-2">
                   <Input 
                     type="number" 
@@ -218,10 +218,10 @@ export function Parametros() {
                     <Save className="h-4 w-4" />
                   </Button>
                 </div>
-                <p className="text-[10px] text-muted-foreground">Intervalo en milisegundos para las peticiones GET al simulador.</p>
+                <p className="text-[10px] text-muted-foreground">{t("settings.uiRefreshDesc") || "Intervalo en milisegundos para las peticiones GET al simulador."}</p>
               </div>
               <div className="space-y-2">
-                <Label>Intervalo de Bitácora (seg)</Label>
+                <Label>{t("settings.logInterval") || "Intervalo de Bitácora (seg)"}</Label>
                 <div className="flex gap-2">
                   <Input 
                     type="number" 
@@ -233,7 +233,7 @@ export function Parametros() {
                     <Save className="h-4 w-4" />
                   </Button>
                 </div>
-                <p className="text-[10px] text-muted-foreground">Frecuencia con la que el servidor inyecta logs de estado NOMINAL en la base de datos.</p>
+                <p className="text-[10px] text-muted-foreground">{t("settings.logIntervalDesc") || "Frecuencia con la que el servidor inyecta logs de estado NOMINAL en la base de datos."}</p>
               </div>
             </CardContent>
           </Card>
@@ -246,24 +246,24 @@ export function Parametros() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />
-                  <CardTitle>Ciberseguridad | Lista Blanca de IPs</CardTitle>
+                  <CardTitle>{t("settings.whitelist") || "Ciberseguridad | Lista Blanca de IPs"}</CardTitle>
                 </div>
                 <Button variant="ghost" size="icon" onClick={refreshBackendConfig}>
                   <RefreshCcw className="h-4 w-4" />
                 </Button>
               </div>
-              <CardDescription>Direcciones IP autorizadas para realizar cambios en sensores sin disparar alertas de ataque.</CardDescription>
+              <CardDescription>{t("settings.whitelistDesc") || "Direcciones IP autorizadas para realizar cambios en sensores sin disparar alertas de ataque."}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="flex gap-4 mb-6">
                 <div className="flex-1">
                   <Input 
-                    placeholder="Ej: 192.168.1.50" 
+                    placeholder={t("settings.ipPlaceholder") || "Ej: 192.168.1.50"}
                     value={newIp}
                     onChange={e => setNewIp(e.target.value)}
                   />
                 </div>
-                <Button onClick={handleAddIp}>Añadir IP</Button>
+                <Button onClick={handleAddIp}>{t("settings.addIp") || "Añadir IP"}</Button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                 {backendConfig.valid_ips.map(ip => (
@@ -290,15 +290,15 @@ export function Parametros() {
             <CardHeader className="bg-muted/10 border-b">
               <div className="flex items-center gap-2">
                 <Layout className="h-5 w-5 text-primary" />
-                <CardTitle>Personalización de Vistas (Dashboard y Simulación)</CardTitle>
+                <CardTitle>{t("settings.viewCustomization") || "Personalización de Vistas (Dashboard y Simulación)"}</CardTitle>
               </div>
-              <CardDescription>Configura la visibilidad y el orden de los sistemas en las páginas principales.</CardDescription>
+              <CardDescription>{t("settings.viewCustomizationDesc") || "Configura la visibilidad y el orden de los sistemas en las páginas principales."}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-8">
               {/* Visibilidad Global */}
               <div className="space-y-4">
                 <h3 className="text-sm font-semibold flex items-center gap-2">
-                   <Eye className="h-4 w-4" /> Visibilidad de Sistemas
+                   <Eye className="h-4 w-4" /> {t("settings.systemVisibility") || "Visibilidad de Sistemas"}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {Object.entries(SYSTEM_NAMES).map(([id, name]) => (
@@ -319,7 +319,7 @@ export function Parametros() {
               {/* Orden Dashboard */}
               <div className="space-y-4 border-t pt-6">
                 <h3 className="text-sm font-semibold flex items-center gap-2">
-                   <Monitor className="h-4 w-4" /> Orden en Dashboard
+                   <Monitor className="h-4 w-4" /> {t("settings.dashboardOrder") || "Orden en Dashboard"}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {dashboardLayout.map((id, index) => (
@@ -353,7 +353,7 @@ export function Parametros() {
               {/* Orden Simulación */}
               <div className="space-y-4 border-t pt-6">
                 <h3 className="text-sm font-semibold flex items-center gap-2">
-                   <Activity className="h-4 w-4" /> Orden en Simulación
+                   <Activity className="h-4 w-4" /> {t("settings.simulationOrder") || "Orden en Simulación"}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {simulationLayout.map((id, index) => (
@@ -393,19 +393,19 @@ export function Parametros() {
             <CardHeader className="bg-muted/10 border-b">
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
-                <CardTitle>Gestión de Personal y Permisos</CardTitle>
+                <CardTitle>{t("settings.personnelManagement") || "Gestión de Personal y Permisos"}</CardTitle>
               </div>
-              <CardDescription>Otorga privilegios de administrador o revócalos para el resto de usuarios.</CardDescription>
+              <CardDescription>{t("settings.personnelDesc") || "Otorga privilegios de administrador o revócalos para el resto de usuarios."}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="overflow-x-auto rounded-lg border">
                 <table className="w-full text-sm">
                   <thead className="bg-muted">
                     <tr>
-                      <th className="px-4 py-3 text-left font-semibold">Usuario</th>
-                      <th className="px-4 py-3 text-left font-semibold">Email</th>
-                      <th className="px-4 py-3 text-left font-semibold">Rol Actual</th>
-                      <th className="px-4 py-3 text-right font-semibold">Acciones</th>
+                      <th className="px-4 py-3 text-left font-semibold">{t("settings.user") || "Usuario"}</th>
+                      <th className="px-4 py-3 text-left font-semibold">{t("settings.email") || "Email"}</th>
+                      <th className="px-4 py-3 text-left font-semibold">{t("settings.currentRole") || "Rol Actual"}</th>
+                      <th className="px-4 py-3 text-right font-semibold">{t("settings.actions") || "Acciones"}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -438,7 +438,7 @@ export function Parametros() {
                                 )}
                                 onClick={() => promoteUser(u.id, u.role === 'admin' ? 'user' : 'admin')}
                               >
-                                {u.role === 'admin' ? 'Revocar Admin' : 'Hacer Admin'}
+                                {u.role === 'admin' ? t("settings.revokeAdmin") || 'Revocar Admin' : t("settings.makeAdmin") || 'Hacer Admin'}
                               </Button>
                               <Button
                                 variant="ghost"
@@ -451,7 +451,7 @@ export function Parametros() {
                               </Button>
                             </div>
                           ) : (
-                            <span className="text-[10px] italic text-muted-foreground px-3">Tú (Actual)</span>
+                            <span className="text-[10px] italic text-muted-foreground px-3">{t("settings.youCurrent") || "Tú (Actual)"}</span>
                           )}
                         </td>
                       </tr>

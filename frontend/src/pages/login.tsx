@@ -58,7 +58,7 @@ export function LoginPage() {
           if (formData.adminCode === "1234") {
             role = "admin"
           } else {
-            throw new Error("El código de administrador es incorrecto")
+            throw new Error(t("login.invalidAdminCode") || "El código de administrador es incorrecto")
           }
         }
         await signup({
@@ -70,7 +70,7 @@ export function LoginPage() {
         })
       }
     } catch (err: any) {
-      setError(err.message || "Ocurrió un error")
+      setError(err.message || (t("login.errorOccurred") || "Ocurrió un error"))
     } finally {
       setIsLoading(false)
     }
@@ -103,12 +103,12 @@ export function LoginPage() {
           <Card className="border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl overflow-hidden border-2">
           <CardHeader>
             <CardTitle className="text-2xl text-white">
-              {isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
+              {isLogin ? (t("login.signIn") || "Iniciar Sesión") : (t("login.signUp") || "Crear Cuenta")}
             </CardTitle>
             <CardDescription className="text-slate-400">
               {isLogin 
-                ? "Ingrese sus credenciales para acceder al sistema." 
-                : "Complete los datos para registrarse en la plataforma."}
+                ? (t("login.signInDesc") || "Ingrese sus credenciales para acceder al sistema.") 
+                : (t("login.signUpDesc") || "Complete los datos para registrarse en la plataforma.")}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -175,13 +175,13 @@ export function LoginPage() {
 
                   {!isLogin && (
                     <motion.div variants={itemVariants} className="space-y-2">
-                       <Label htmlFor="adminCode" className="text-slate-200">Código de Autorización (Opcional)</Label>
+                       <Label htmlFor="adminCode" className="text-slate-200">{t("login.adminCode") || "Código de Autorización (Opcional)"}</Label>
                        <div className="relative">
                          <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                          <Input
                            id="adminCode"
                            type="password"
-                           placeholder="Para crear cuenta de Administrador"
+                           placeholder={t("login.adminCodeDesc") || "Para crear cuenta de Administrador"}
                            className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus:border-primary/50 focus:ring-primary/20 transition-all"
                            value={formData.adminCode}
                            onChange={e => setFormData({ ...formData, adminCode: e.target.value })}
@@ -224,10 +224,10 @@ export function LoginPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Procesando...
+                    {t("login.processing") || "Procesando..."}
                   </>
                 ) : (
-                  isLogin ? "Entrar al Sistema" : "Crear Cuenta"
+                  isLogin ? (t("login.enterSystem") || "Entrar al Sistema") : (t("login.signUp") || "Crear Cuenta")
                 )}
               </Button>
               <Button 
@@ -240,8 +240,8 @@ export function LoginPage() {
                 }}
               >
                 {isLogin 
-                  ? "¿No tiene cuenta? Regístrese aquí" 
-                  : "¿Ya tiene cuenta? Inicie sesión"}
+                  ? (t("login.noAccount") || "¿No tiene cuenta? Regístrese aquí") 
+                  : (t("login.hasAccount") || "¿Ya tiene cuenta? Inicie sesión")}
               </Button>
             </CardFooter>
           </form>
