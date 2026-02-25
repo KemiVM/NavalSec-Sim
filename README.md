@@ -45,8 +45,8 @@ La interfaz incorpora una **estética profesional**, priorizando la legibilidad 
 1.  **Clonación**:
 
     ```bash
-    git clone https://github.com/tu-usuario/navalsec-sim.git
-    cd navalsec-sim
+    git clone https://github.com/KemiVM/NavalSec-Sim.git
+    cd NavalSec-Sim
     ```
 
 2.  **Despliegue de los Microservicios**:
@@ -63,7 +63,7 @@ La interfaz incorpora una **estética profesional**, priorizando la legibilidad 
 ## Arquitectura
 
 ```
-navalsec-sim/
+NavalSec-Sim/
 ├── frontend/           # Interfaz React y Exploits Nativos en HTML Puro (/public)
 ├── simulacion/         # Núcleo de inercia térmica, físicas y DB de Usuarios
 ├── datos/              # Gestión de persistencia e histórico gráfico
