@@ -66,6 +66,10 @@
     "availabilityLabel": "Disponibilidad de infraestructura",
     "last24h": "Intervalo: Últimas 24 horas",
     "distribution": "Distribución del estado operativo",
+    "cyberThreats": "Alertas de Ciberseguridad",
+    "systemFaults": "Fallos del Sistema",
+    "recordedHistorically": "Registradas históricamente",
+    "connectionError": "Error de conexión con los servicios",
     "states": {
         "active": "En Servicio",
         "fault": "Fallo / Disparado",

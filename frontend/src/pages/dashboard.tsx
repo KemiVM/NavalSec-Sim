@@ -21,7 +21,7 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null)
   
   // We'll calculate the live chart data in render from the `logs` state.
-  const [chartData, setChartData] = useState<{time: string, alerts: number}[]>([])
+  const [chartData, setChartData] = useState<{time: string, faults: number, cyber: number}[]>([])
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -40,26 +40,33 @@ export function Dashboard() {
                 // Formatting time e.g., '14:05:22' to '14:05' to group by minute
                 const d = new Date(log.timestamp)
                 const timeKey = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
-                acc[timeKey] = (acc[timeKey] || 0) + 1
+                if (!acc[timeKey]) {
+                    acc[timeKey] = { faults: 0, cyber: 0 }
+                }
+                if (log.is_attack) {
+                    acc[timeKey].cyber += 1
+                } else if (log.is_abnormal) {
+                    acc[timeKey].faults += 1
+                }
             }
             return acc
-        }, {} as Record<string, number>)
+        }, {} as Record<string, { faults: number, cyber: number }>)
         
         // Convert to array and sort chronologically
         const liveChartData = Object.entries(grouped)
-            .map(([time, alerts]) => ({ time, alerts }))
+            .map(([time, counts]) => ({ time, faults: counts.faults, cyber: counts.cyber }))
             .sort((a, b) => a.time.localeCompare(b.time))
             
         // If there are no alerts at all, just put a flat line for visual feedback
         if (liveChartData.length === 0) {
             const now = new Date()
-            liveChartData.push({ time: `${now.getHours()}:${now.getMinutes()}`, alerts: 0 })
+            liveChartData.push({ time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`, faults: 0, cyber: 0 })
         }
 
         setChartData(liveChartData)
         setError(null)
       } catch (err) {
-        setError("Error connecting to backend services")
+        setError(t("dashboard.connectionError"))
         console.error(err)
       } finally {
         setLoading(false)
@@ -136,13 +143,13 @@ export function Dashboard() {
                     <ShieldAlert className="h-24 w-24 text-red-500" />
                 </div>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">{t("dashboard.cyberThreats") || "Amenazas Cibernéticas"}</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground">{t("dashboard.cyberThreats")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-bold text-red-500">
                         <NumberTicker value={logs.filter(l => l.is_attack).length} />
                     </div>
-                     <p className="text-xs text-muted-foreground mt-1">Registradas históricamente</p>
+                     <p className="text-xs text-muted-foreground mt-1">{t("dashboard.recordedHistorically")}</p>
                 </CardContent>
             </Card>
         </motion.div>
@@ -233,16 +240,20 @@ export function Dashboard() {
                 </CardHeader>
                 <CardContent className="h-[280px]">
                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={chartData}>
+                        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                             <defs>
-                                <linearGradient id="colorAlerts" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#00A9E0" stopOpacity={0.8}/>
-                                    <stop offset="95%" stopColor="#00A9E0" stopOpacity={0}/>
+                                <linearGradient id="colorFaults" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
+                                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                                </linearGradient>
+                                <linearGradient id="colorCyber" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
+                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
-                            <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
-                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === "dark" ? "#374151" : "#e5e5e5"} />
+                            <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} dy={10} />
+                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} allowDecimals={false} />
                             <Tooltip 
                                 cursor={{fill: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}}
                                 contentStyle={{
@@ -252,9 +263,10 @@ export function Dashboard() {
                                     color: 'hsl(var(--popover-foreground))',
                                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                                 }}
-                                itemStyle={{color: '#00A9E0'}}
                             />
-                            <Area type="monotone" dataKey="alerts" stroke="#00A9E0" strokeWidth={3} fillOpacity={1} fill="url(#colorAlerts)" />
+                            <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '13px', paddingBottom: '10px' }} />
+                            <Area type="monotone" name={t("dashboard.systemFaults")} dataKey="faults" stroke="#f59e0b" strokeWidth={3} fillOpacity={1} fill="url(#colorFaults)" />
+                            <Area type="monotone" name={t("dashboard.cyberThreats")} dataKey="cyber" stroke="#ef4444" strokeWidth={3} fillOpacity={1} fill="url(#colorCyber)" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </CardContent>
