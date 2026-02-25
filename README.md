@@ -2,7 +2,14 @@
 
 Sistema profesional de monitorización y simulación naval con arquitectura de microservicios y capacidades de ciberdefensa.
 
-<img width="1920" height="905" alt="image" src="https://github.com/user-attachments/assets/3e611539-0183-4851-a2d8-c1f41cf4adca" />
+<img width="1920" height="911" alt="image" src="https://github.com/user-attachments/assets/f7f46934-1a78-4d08-9ffd-803d31b1b3c3" />
+<img width="1920" height="910" alt="image" src="https://github.com/user-attachments/assets/470d90d0-f4bf-4272-b625-0379160946f2" />
+<img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/1eec0432-1d32-421e-aa57-bcfcf7caa863" />
+<img width="1920" height="909" alt="image" src="https://github.com/user-attachments/assets/0c915516-80ce-4fa3-ad4a-3a863b904080" />
+
+
+
+
 
 ## Descripción
 
