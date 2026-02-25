@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NavalSec // Terminal de Explotación</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            position: absolute;
+            pointer-events: none;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,255,0,0.2) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1;
+            animation: scanline 6s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { top: -100px; }
+            100% { top: 100%; }
+        }
+
+        .btn-target {
+            background-color: #0a150a;
+            border: 1px solid #005500;
+            transition: all 0.2s;
+        }
+        .btn-target:active {
+            transform: scale(0.98);
+        }
+        .btn-target.active {
+            border-color: #ff0000;
+            box-shadow: 0 0 15px rgba(255,0,0,0.5);
+            animation: pulse-border 1.5s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        }
+
+        .btn-red {
+            background-color: #3d0000;
+            color: #ff4444;
+            border: 1px solid #ff0000;
+        }
+        .btn-yellow {
+            background-color: #3d3d00;
+            color: #ffff44;
+            border: 1px solid #ffff00;
+        }
+        
+        #log-console {
+            scrollbar-width: none;
+        }
+        #log-console::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col crt bg-black">
+    <div class="scanline"></div>
+
+    <header class="p-4 border-b border-green-900 flex justify-between items-center bg-black z-20">
+        <div>
+            <h1 class="text-xl font-bold tracking-tighter text-red-500 animate-pulse">EXPLOIT.FRAMEWORK</h1>
+            <p class="text-xs text-green-700">NAVALSEC // MOBILE EDITION</p>
+        </div>
+        <div class="text-xs text-right">
+            <span class="text-green-600 block">LINK: ESTABLECIDO</span>
+            <span class="text-yellow-600 block">ENCRYPTION: AES-256</span>
+        </div>
+    </header>
+
+    <div class="p-4 bg-green-900 bg-opacity-10 border-b border-green-900 z-20">
+        <label class="block text-xs text-green-600 mb-1">IP DE OFUSCACIÓN (SPOOFING):</label>
+        <input type="text" id="spoof-ip" value="185.15.2.204" class="w-full bg-black border border-green-800 text-green-400 p-2 font-mono text-sm focus:outline-none focus:border-red-500 rounded">
+        <p class="text-[10px] text-green-700 mt-1">Cualquier ataque evadirá el firewall saliendo desde esta IP. El simulador disparará la alarma de ciberataque roja.</p>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 z-20 pb-20">
+        <div id="targets" class="grid grid-cols-1 gap-4">
+            <!-- Renderizado dinámico -->
+        </div>
+    </div>
+
+    <div class="h-32 bg-black border-t border-green-900 p-2 z-20 flex flex-col font-mono text-xs">
+        <div class="text-green-700 border-b border-green-900 pb-1 mb-1 font-bold">SYSLOG CONSOLE</div>
+        <div id="log-console" class="flex-1 overflow-y-auto flex flex-col gap-1 items-start text-green-600">
+            <div><span class="text-green-500">[SYSTEM]</span> Módulo de inyección online.</div>
+        </div>
+    </div>
+
+    <script>
+        const SYSTEMS = [
+            { id: "sys_main_engine", name: "Motor Principal" },
+            { id: "sys_aux_gen", name: "Generador Auxiliar" },
+            { id: "sys_bilge_pump", name: "Bomba de Achique" },
+            { id: "sys_radar", name: "Radar Banda-X" },
+            { id: "sys_steering", name: "Sistema de Gobierno" },
+            { id: "sys_fire", name: "Contraincendios" },
+        ];
+
+        const logConsole = document.getElementById('log-console');
+        const spoofIpInput = document.getElementById('spoof-ip');
+
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            const p = document.createElement('div');
+            let color = 'text-green-600';
+            let prefix = '[INFO]';
+            
+            if (type === 'error') { color = 'text-red-500'; prefix = '[FAIL]'; }
+            if (type === 'success') { color = 'text-green-400'; prefix = '[OK]'; }
+            if (type === 'attack') { color = 'text-red-500'; prefix = '[EXEC]'; }
+
+            p.className = `${color} w-full`;
+            p.innerHTML = `<span class="opacity-50 text-xs">${time}</span> ${prefix} ${message}`;
+            logConsole.appendChild(p);
+            logConsole.scrollTop = logConsole.scrollHeight;
+        }
+
+        async function triggerAttack(systemId, btnElement, type) {
+            const simulatedIp = spoofIpInput.value || "193.18.2.1"; // Default foreign IP
+            const duration = type === 'relay' ? 10 : 15;
+            
+            const card = document.getElementById(`card-${systemId}`);
+            card.classList.add('active');
+            
+            addLog(`Enviando Payload [${type.toUpperCase()}] a ${systemId} vía ${simulatedIp}...`, 'attack');
+
+            try {
+                const endpoint = type === 'relay' ? '/api/attacks/relay' : '/api/attacks/sensor';
+                const payload = type === 'relay' 
+                    ? { system_id: systemId, duration, simulated_ip: simulatedIp }
+                    : { system_id: systemId, sensor_id: `${systemId.replace('sys_', 'sens_')}_spoof`, value: 9999, duration, simulated_ip: simulatedIp };
+
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error(`El Firewall cerró el puerto (${res.status})`);
+                
+                addLog(`Payload inyectado en ${systemId}. Persistencia: ${duration}s`, 'success');
+
+            } catch(e) {
+                addLog(`Inyección Fracasada: ${e.message}`, 'error');
+            }
+
+            // Restore card look after duration
+            setTimeout(() => {
+                card.classList.remove('active');
+                addLog(`Conexión con ${systemId} terminada.`, 'info');
+            }, duration * 1000);
+        }
+
+        function renderTargets() {
+            const container = document.getElementById('targets');
+            
+            SYSTEMS.forEach(sys => {
+                const html = `
+                    <div id="card-${sys.id}" class="btn-target rounded p-4 flex flex-col">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-green-400 font-bold uppercase tracking-wider text-sm">${sys.name}</h3>
+                            <span class="text-[10px] text-green-700 bg-black px-2 py-1 border border-green-900 rounded">${sys.id}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-auto">
+                            <button onclick="triggerAttack('${sys.id}', this, 'relay')" class="btn-red py-3 px-2 rounded font-bold text-xs uppercase flex items-center justify-center gap-1 active:scale-95 transition-transform">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                DDOS RELAY
+                            </button>
+                            <button onclick="triggerAttack('${sys.id}', this, 'sensor')" class="btn-yellow py-3 px-2 rounded font-bold text-xs uppercase flex items-center justify-center gap-1 active:scale-95 transition-transform">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                SPOOF SENSOR
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        renderTargets();
+    </script>
+</body>
+</html>

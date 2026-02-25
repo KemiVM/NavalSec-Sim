@@ -1,5 +1,6 @@
 import random
 import asyncio
+import math
 from typing import List, Optional
 from app.models import NavalSystem, Relay, Sensor, RelayState, SensorType
 
@@ -7,6 +8,12 @@ class Simulator:
     def __init__(self):
         self.systems: List[NavalSystem] = self._initialize_systems()
         self.running = False
+        # Configuración dinámica
+        self.config = {
+            "valid_ips": ["127.0.0.1", "localhost", "::1", "172.18.0.1"],
+            "log_interval": 20, # segundos
+            "simulation_sleep": 1.0 # segundos (delay del loop)
+        }
 
     def _initialize_systems(self) -> List[NavalSystem]:
         # Inicializa 6 sistemas navales esenciales con valores típicos
@@ -32,7 +39,7 @@ class Simulator:
                 sensors=[
                     Sensor(id="sens_gen_volt", type=SensorType.VOLTAGE, value=220.0, unit="V", 
                            min_val=0, max_val=300, drift=0.2,
-                           safe_min=210, safe_max=230, critical_min=190, critical_max=250),
+                           safe_min=200, safe_max=240, critical_min=180, critical_max=250),
                     Sensor(id="sens_gen_curr", type=SensorType.CURRENT, value=45.0, unit="A", 
                            min_val=0, max_val=150, drift=2.0,
                            safe_min=0, safe_max=100, critical_min=-1, critical_max=120)
@@ -68,7 +75,7 @@ class Simulator:
                 sensors=[
                     Sensor(id="sens_steer_volt", type=SensorType.VOLTAGE, value=24.0, unit="V", 
                            min_val=0, max_val=40, drift=0.1,
-                           safe_min=22, safe_max=28, critical_min=18, critical_max=32)
+                           safe_min=20, safe_max=30, critical_min=15, critical_max=35)
                 ]
             ),
 
@@ -98,7 +105,8 @@ class Simulator:
                      system.relay.tripped_at = None
                      # Restaurar sensores a valores seguros (promedio de safe_min/max)
                      for sensor in system.sensors:
-                         sensor.value = (sensor.safe_min + sensor.safe_max) / 2
+                         if sensor.safe_min and sensor.safe_max:
+                             sensor.value = (sensor.safe_min + sensor.safe_max) / 2
                 else:
                     # During TRIPPED, stopping simulation (freezing values)
                     # The user requested: "La simulación ... debería detenerse hasta que vuelva a estar ON"
@@ -136,18 +144,79 @@ class Simulator:
                 if is_active:
                     # Lógica de ARRANQUE/RECUPERACIÓN
                     # Si el valor está muy por debajo del mínimo seguro, subirlo rápidamente
-                    if sensor.value < sensor.safe_min:
+                    if sensor.safe_min and sensor.value < sensor.safe_min:
                          # Subir un 20% de la diferencia hacia el safe_min
                          diff = sensor.safe_min - sensor.value
                          # Asegurar un incremento mínimo para evitar atascarse en asintotas
                          increment = max(diff * 0.2, sensor.max_val * 0.05)
                          new_value = sensor.value + increment
                     else:
-                        change = random.uniform(-sensor.drift, sensor.drift)
-                        new_value = sensor.value + change
+                        if sensor.safe_min and sensor.safe_max:
+                            if sensor.type == SensorType.TEMPERATURE:
+                                # Thermal inertia (Newton's law of cooling/heating)
+                                median = (sensor.safe_max + sensor.safe_min) / 2
+                                # Target moves slowly using sine wave
+                                target = median + math.sin(current_time * 0.1 + hash(sensor.id)) * (sensor.safe_max - sensor.safe_min) * 0.3
+                                # Move towards target slowly (inertia)
+                                diff = target - sensor.value
+                                change = diff * 0.05 + random.uniform(-sensor.drift * 0.2, sensor.drift * 0.2)
+                                new_value = sensor.value + change
+                            else:
+                                # Voltage/Current/RPM
+                                # Use sine wave for mechanical/electrical oscillations + noise
+                                median = (sensor.safe_max + sensor.safe_min) / 2
+                                amplitude = (sensor.safe_max - sensor.safe_min) * 0.2
+                                wave = math.sin(current_time * 0.5 + hash(sensor.id)) * amplitude
+                                noise = random.uniform(-sensor.drift * 0.5, sensor.drift * 0.5)
+                                
+                                # Small drift pushing it slowly out of bounds for the "tension" requested by user
+                                tension = math.sin(current_time * 0.01 + hash(sensor.id)) * amplitude * 1.5
+                                target = median + wave + noise + tension
+                                
+                                # Smoothly transition towards the dynamic target to allow spoofed values to persist
+                                diff = target - sensor.value
+                                change = diff * 0.2 + random.uniform(-sensor.drift * 0.1, sensor.drift * 0.1)
+                                new_value = sensor.value + change
+                        else:
+                            # Fallback if safe bounds are missing
+                            change = random.uniform(-sensor.drift, sensor.drift)
+                            new_value = sensor.value + change
 
                     # Respetar límites físicos simulados
                     new_value = max(sensor.min_val, min(new_value, sensor.max_val))
+
+                    # 3. COMPORTAMIENTO AUTOMÁTICO DE ADVERTENCIAS (TERMOSTATO / SOBRECARGA)
+                    # Si el sensor entra en zona de advertencia (cerca de los límites seguros), reaccionar.
+                    if sensor.safe_max and sensor.safe_min:
+                        range_span = sensor.safe_max - sensor.safe_min
+                        warning_high = sensor.safe_max - (range_span * 0.1) # 10% from the top limit
+                        warning_low = sensor.safe_min + (range_span * 0.1)  # 10% from the bottom limit
+                        
+                        is_warning_high = new_value >= warning_high
+                        is_warning_low = new_value <= warning_low
+
+                        if is_warning_high or is_warning_low:
+                            # % de probabilidad: 98% de corrección segura (50-60% del rango seguro), 2% de escalar a crítico
+                            if random.random() < 0.02:
+                                # 2% FATAL: Escalar dramáticamente hacia/sobre el crítico (TRIPPED chance)
+                                if is_warning_high:
+                                    jump = (sensor.critical_max - new_value) * random.uniform(0.9, 1.2)
+                                    new_value += jump
+                                else:
+                                    jump = (new_value - sensor.critical_min) * random.uniform(0.9, 1.2)
+                                    new_value -= jump
+                            else:
+                                # 98% CORRECCIÓN: Bajar o subir a un valor entre 40% y 60% del rango útil
+                                target_min = sensor.safe_min + (range_span * 0.40)
+                                target_max = sensor.safe_min + (range_span * 0.60)
+                                # Smoothing jump - instead of jumping completely, smoothly transition
+                                target_value = random.uniform(target_min, target_max)
+                                new_value = new_value + (target_value - new_value) * 0.3
+                                
+                            # Re-aplicar límites por si el salto crítico lo saca de banda física
+                            new_value = max(sensor.min_val, min(new_value, sensor.max_val))
+
+
                     sensor.value = round(new_value, 2)
 
                     # 3. VERIFICACIÓN CRÍTICA

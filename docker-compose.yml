@@ -54,6 +54,7 @@ services:
         condition: service_healthy
     networks:
       - barco-net
+    restart: unless-stopped
 
   # Servicio 3: Colector de datos
   datos:
@@ -80,6 +81,7 @@ services:
       - ship_data_volume:/data
     networks:
       - barco-net
+    restart: unless-stopped
 
   # Servicio 4: Frontend
   frontend:
@@ -88,7 +90,7 @@ services:
       dockerfile: Dockerfile
     container_name: barco-frontend
     ports:
-      - "3000:80"
+      - "8080:80"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
       interval: 10s
@@ -103,6 +105,7 @@ services:
         condition: service_healthy
     networks:
       - barco-net
+    restart: unless-stopped
 
 volumes:
   ship_data_volume: # Volumen nombrado para persistir datos entre reinicios

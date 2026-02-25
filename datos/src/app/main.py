@@ -5,6 +5,7 @@ import logging
 from app.core.settings import settings
 from app.core.database import create_db_and_tables
 from app.api.routes import logs
+from fastapi.middleware.cors import CORSMiddleware
 
 # Configuración de Logging
 logging.basicConfig(level=logging.INFO)
@@ -22,10 +23,18 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Global Exception Handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Error no manejado: {exc}")
+    logger.exception(f"Error no manejado: {exc}")
     return JSONResponse(
         status_code=500,
         content={"message": "Internal Server Error"},
