@@ -7,6 +7,11 @@ const api = axios.create({
   },
 });
 
+/**
+ * @class SimulationService
+ * Servicio de comunicaciones para la interacción y telemetría en tiempo real
+ * con el componente central del Motor Físico Naval.
+ */
 export const SimulationService = {
   getSystems: async () => {
     const response = await api.get<NavalSystem[]>('/api/systems/');
@@ -38,6 +43,11 @@ export const SimulationService = {
   },
 };
 
+/**
+ * @class FaultsService
+ * Pasarela de inyección de vulnerabilidades y ciberataques. Se comunica de forma
+ * exclusiva con el proxy de ataques en Node / Fallos.
+ */
 export const FaultsService = {
   injectRelayFault: async (systemId: string, duration: number, simulatedIp?: string) => {
     const response = await api.post('/api/attacks/relay', { 
@@ -59,6 +69,10 @@ export const FaultsService = {
   }
 };
 
+/**
+ * @class DataService
+ * Acceso de solo lectura a la base de datos de auditoría e historial del buque.
+ */
 export const DataService = {
   getLogs: async (limit: number = 50, abnormalOnly: boolean = false, search?: string) => {
     const response = await api.get<SystemLog[]>('/api/logs/', {

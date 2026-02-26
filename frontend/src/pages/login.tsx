@@ -103,7 +103,7 @@ export function LoginPage() {
           <Card className="border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl overflow-hidden border-2">
           <CardHeader>
             <CardTitle className="text-2xl text-white">
-              {isLogin ? (t("login.signIn") || "Iniciar Sesión") : (t("login.signUp") || "Crear Cuenta")}
+              {isLogin ? (t("login.login") || "Iniciar Sesión") : (t("login.signup") || "Crear Cuenta")}
             </CardTitle>
             <CardDescription className="text-slate-400">
               {isLogin 
@@ -227,7 +227,7 @@ export function LoginPage() {
                     {t("login.processing") || "Procesando..."}
                   </>
                 ) : (
-                  isLogin ? (t("login.enterSystem") || "Entrar al Sistema") : (t("login.signUp") || "Crear Cuenta")
+                  isLogin ? (t("login.enterSystem") || "Entrar al Sistema") : (t("login.signup") || "Crear Cuenta")
                 )}
               </Button>
               <Button 

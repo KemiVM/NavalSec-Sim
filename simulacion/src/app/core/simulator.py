@@ -5,14 +5,20 @@ from typing import List, Optional
 from app.models import NavalSystem, Relay, Sensor, RelayState, SensorType
 
 class Simulator:
+    """
+    Motor central de físicas navales (Core Engine).
+    Inicializa todos los sistemas vitales por defecto, sus sensores y componentes.
+    Su función asíncrona principal orquesta la variación matemática aplicando las 
+    Reglas Físicas de Termodinámica, Transmisiones y Presión en un bloque loop contínuo.
+    """
     def __init__(self):
         self.systems: List[NavalSystem] = self._initialize_systems()
         self.running = False
-        # Configuración dinámica
+        # Configuraciones Dinámicas del Motor:
         self.config = {
             "valid_ips": ["127.0.0.1", "localhost", "::1", "172.18.0.1"],
-            "log_interval": 20, # segundos
-            "simulation_sleep": 1.0 # segundos (delay del loop)
+            "log_interval": 20, # Frecuencia (segundos) de logs automáticos 'NOMINAL'
+            "simulation_sleep": 1.0 # Tick-Rate del motor de físicas. Menor = más resolución.
         }
 
     def _initialize_systems(self) -> List[NavalSystem]:
@@ -92,12 +98,18 @@ class Simulator:
         ]
 
     def update_simulation(self):
+        """
+        [ TICK DEL MOTOR DE FÍSICAS - INVOCADO CADA N SEGUNDOS ]
+        Propaga los comportamientos matemáticos de todos los subsistemas usando
+        fórmulas pseudo-realistas (ley de enfriamiento, ondas senoidales, inercias...)
+        """
         import time
         current_time = time.time()
 
         # Actualiza los valores de los sensores y gestiona la lógica de seguridad
         for system in self.systems:
-            # 1. GESTIÓN DE SEGURIDAD (Trip y Recuperación)
+            # === FASE 1: RESOLUCIÓN DE CORTES (TRIP Y RECUPERACIÓN) ===
+            # Bloque de seguridad perimetral. Impide operaciones en relés reventados.
             if system.relay.state == RelayState.TRIPPED:
                 # Verificar si ha pasado el tiempo de recuperación (ej. 10 segundos)
                 if system.relay.tripped_at and (current_time - system.relay.tripped_at > 10):
@@ -108,12 +120,11 @@ class Simulator:
                          if sensor.safe_min and sensor.safe_max:
                              sensor.value = (sensor.safe_min + sensor.safe_max) / 2
                 else:
-                    # During TRIPPED, stopping simulation (freezing values)
-                    # The user requested: "La simulación ... debería detenerse hasta que vuelva a estar ON"
-                    # So we just continue, effectively keeping the last values.
+                    # MOTOR BLOQUEADO: Si el trip sigue activo y no han pasado 10s, abortar simulacion de este nodo.
+                    # Mantiene la "fotografía estática" de las gráficas para evaluar el suceso post-mortem.
                     continue
 
-            # 2. ACTUALIZACIÓN NORMAL Y DETECCIÓN DE FALLOS
+            # === FASE 2: CÁLCULOS FÍSICOS Y DECAIMIENTO TÉRMICO ===
             # Usamos comparación robusta con .value para asegurar que comparamos strings
             # RelayState puede ser un Enum, así que .value nos da "ON" o "OFF"
             state_str = system.relay.state.value if hasattr(system.relay.state, "value") else str(system.relay.state)
@@ -182,11 +193,12 @@ class Simulator:
                             change = random.uniform(-sensor.drift, sensor.drift)
                             new_value = sensor.value + change
 
-                    # Respetar límites físicos simulados
+                    # Clamp estricto para que los picos nunca salgan de las capacidades del hardware
                     new_value = max(sensor.min_val, min(new_value, sensor.max_val))
 
-                    # 3. COMPORTAMIENTO AUTOMÁTICO DE ADVERTENCIAS (TERMOSTATO / SOBRECARGA)
-                    # Si el sensor entra en zona de advertencia (cerca de los límites seguros), reaccionar.
+                    # === FASE 3: TERMOSTATOS Y CORRECCIONES CIBERNÉTICAS ===
+                    # El agente defensivo. Ante picos anómalos (iniciando un spoofing test por ejemplo),
+                    # el sistema tratará de amortiguar y devolver los sensores a zonas "safe".
                     if sensor.safe_max and sensor.safe_min:
                         range_span = sensor.safe_max - sensor.safe_min
                         warning_high = sensor.safe_max - (range_span * 0.1) # 10% from the top limit
@@ -196,9 +208,9 @@ class Simulator:
                         is_warning_low = new_value <= warning_low
 
                         if is_warning_high or is_warning_low:
-                            # % de probabilidad: 98% de corrección segura (50-60% del rango seguro), 2% de escalar a crítico
-                            if random.random() < 0.02:
-                                # 2% FATAL: Escalar dramáticamente hacia/sobre el crítico (TRIPPED chance)
+                            # Si estamos bajo ataque, forzamos la ruta fatal en lugar de corregir
+                            if system.under_attack_ip or random.random() < 0.02:
+                                # FATAL: Escalar dramáticamente hacia/sobre el crítico (TRIPPED chance)
                                 if is_warning_high:
                                     jump = (sensor.critical_max - new_value) * random.uniform(0.9, 1.2)
                                     new_value += jump
@@ -219,8 +231,9 @@ class Simulator:
 
                     sensor.value = round(new_value, 2)
 
-                    # 3. VERIFICACIÓN CRÍTICA
-                    # Si el valor excede los límites críticos, disparar el relé
+                    # === FASE 4: COLAPSO DEL SISTEMA (FAIL-SAFE) ===
+                    # Si al terminar las correcciones seguimos por encima del rojo absoluto,
+                    # se destruye la continuidad y se envía el relé a TRIPPED inmediatamente.
                     if new_value > sensor.critical_max or new_value < sensor.critical_min:
                         system.relay.state = RelayState.TRIPPED
                         system.relay.tripped_at = current_time
@@ -228,6 +241,7 @@ class Simulator:
 
 
     def get_system(self, system_id: str) -> Optional[NavalSystem]:
+        """ Obtiene el objeto NavalSystem localizando su ID en memoria o devuelve None. """
         return next((s for s in self.systems if s.id == system_id), None)
 
 # Instancia global del simulador

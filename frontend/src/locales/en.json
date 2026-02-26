@@ -13,7 +13,8 @@
     "searchActions": "Actions",
     "searchLogs": "Recent Events",
     "searchGo": "Go",
-    "searchApply": "Apply"
+    "searchApply": "Apply",
+    "deleteNotification": "Delete notification"
   },
   "login": {
     "subtitle": "Advanced Naval Simulation & Control",

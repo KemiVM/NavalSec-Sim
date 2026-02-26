@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
 import { getSensorName } from "@/utils/sensor-utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { SimulationService } from "@/services/api"
-import type { NavalSystem } from "@/types/api"
+import type { NavalSystem, Sensor } from "@/types/api"
 import { Power, RefreshCw, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -26,11 +26,15 @@ export function Simulacion() {
   const [systems, setSystems] = useState<NavalSystem[]>([])
   const [history, setHistory] = useState<Record<string, Record<string, unknown>[]>>({})
 
-  const fetchSystems = async () => {
+  // Se ha cacheado el componente con useCallback para evitar la 
+  // redeclaración en cada ciclo de renderizado provocado por refreshInterval.
+  const fetchSystems = useCallback(async () => {
     try {
         const data = await SimulationService.getSystems()
         setSystems(data)
         
+        // Captura de datos en tiempo real y formateo de la serie temporal (Time-Series)
+        // Límite fijado en 30 capturas para optimizar la memoria del navegador.
         const now = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
         setHistory(prev => {
             const newHistory = { ...prev }
@@ -38,7 +42,7 @@ export function Simulacion() {
                 if (!newHistory[system.id]) newHistory[system.id] = []
                 
                 const dataPoint: Record<string, unknown> = { time: now }
-                system.sensors.forEach(sensor => {
+                system.sensors.forEach((sensor: Sensor) => {
                     dataPoint[sensor.id] = Number(sensor.value)
                 })
                 
@@ -47,15 +51,16 @@ export function Simulacion() {
             return newHistory
         })
     } catch (err) {
-        console.error(err)
+        console.error("Fallo al contactar motor de simulaciones:", err)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchSystems()
+    // Polling contínuo. Solicita nueva telemetría.
     const interval = setInterval(fetchSystems, refreshInterval)
     return () => clearInterval(interval)
-  }, [refreshInterval])
+  }, [refreshInterval, fetchSystems])
 
   const handleSetRelay = async (systemId: string, newState: "ON" | "OFF" | "TRIPPED") => {
       try {
@@ -66,7 +71,8 @@ export function Simulacion() {
       }
   }
 
-  const colors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE", "#00C49F"]
+  // Paleta de colores cacheada para Recharts
+  const colors = useMemo(() => ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE", "#00C49F"], [])
 
   const container = {
     hidden: { opacity: 0 },

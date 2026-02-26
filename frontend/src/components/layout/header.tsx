@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Bell, Search, Menu, CheckCircle, Info, AlertTriangle, AlertCircle, X, Sun, Moon, User as UserIcon } from "lucide-react"
 import { Link } from "react-router-dom"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useNotifications, type AppNotification } from "@/contexts/NotificationContext"
@@ -135,8 +136,15 @@ export function Header() {
           />
           
           {/* Search Dropdown */}
+          <AnimatePresence>
           {isSearchOpen && searchQuery.trim() && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card border shadow-xl rounded-xl z-50 overflow-hidden flex flex-col max-h-[70vh] animate-in fade-in slide-in-from-top-2 duration-200">
+              <motion.div 
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-0 right-0 mt-2 bg-card border shadow-xl rounded-xl z-50 overflow-hidden flex flex-col max-h-[70vh]"
+              >
                   <div className="overflow-y-auto p-2">
                        {searchResults.nav.length === 0 && searchResults.actions.length === 0 && searchResults.logs.length === 0 ? (
                            <div className="p-4 text-center text-sm text-muted-foreground">
@@ -220,8 +228,9 @@ export function Header() {
                            </div>
                        )}
                   </div>
-              </div>
+              </motion.div>
           )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -262,9 +271,16 @@ export function Header() {
               )}
             </Button>
 
+            <AnimatePresence>
             {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border shadow-lg rounded-xl z-50 animate-in fade-in slide-in-from-top-4 duration-200">
-                    <div className="flex items-center justify-between px-4 py-3 border-b">
+                <motion.div 
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border shadow-lg rounded-xl z-50 flex flex-col overflow-hidden"
+                >
+                    <div className="flex items-center justify-between px-4 py-3 border-b bg-background/50 backdrop-blur-sm z-10">
                         <span className="font-semibold">{t("header.notifications")}</span>
                         <div className="flex gap-2">
                             {unreadCount > 0 && (
@@ -336,7 +352,7 @@ export function Header() {
                                                     e.stopPropagation();
                                                     removeNotification(notif.id);
                                                 }}
-                                                title="Eliminar notificación"
+                                                title={t("header.deleteNotification") || "Eliminar notificación"}
                                             >
                                                 <X className="h-3 w-3" />
                                             </Button>
@@ -349,8 +365,9 @@ export function Header() {
                             </div>
                         )}
                     </div>
-                </div>
+                </motion.div>
             )}
+            </AnimatePresence>
         </div>
 
         <Link to="/perfil">

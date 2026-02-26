@@ -13,7 +13,8 @@
     "searchActions": "Acciones",
     "searchLogs": "Eventos Recientes",
     "searchGo": "Ir",
-    "searchApply": "Aplicar"
+    "searchApply": "Aplicar",
+    "deleteNotification": "Eliminar notificación"
   },
   "login": {
     "subtitle": "Simulación y Control Naval Avanzado",

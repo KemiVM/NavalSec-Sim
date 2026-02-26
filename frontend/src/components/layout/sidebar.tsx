@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
+import { motion } from "framer-motion"
 import { LayoutDashboard, Radio, Zap, Database, Settings, LifeBuoy } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -41,7 +42,11 @@ export function Sidebar() {
                 )}
               >
                  {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
+                    <motion.span 
+                        layoutId="sidebarActiveIndicator"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" 
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
                  )}
                 <item.icon
                   className={cn(
